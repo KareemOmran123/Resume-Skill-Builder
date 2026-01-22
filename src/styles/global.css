@@ -1,0 +1,283 @@
+:root{
+  --bg: #ffffff;
+  --text: #0b1220;
+  --muted: #556070;
+  --border: #e7ebf1;
+  --shadow: 0 10px 30px rgba(12, 20, 33, 0.08);
+  --navy: #0b1220;
+  --navy2: #121b2e;
+  --pill: #f6f8fb;
+  --radius: 14px;
+  --radius2: 18px;
+  --max: 980px;
+  --track: #edf1f7;
+}
+
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--text);
+  background: var(--bg);
+}
+
+a{ color: inherit; text-decoration: none; }
+
+.appShell{
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.container{
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.topNav{
+  height: 64px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.brand{
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.page{
+  flex: 1;
+  padding: 52px 0 70px;
+}
+
+.centerStack{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.h1{
+  font-size: clamp(34px, 5vw, 56px);
+  line-height: 1.05;
+  margin: 0 0 14px;
+  font-weight: 500;
+}
+
+.subhead{
+  margin: 0;
+  max-width: 640px;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 18px;
+}
+
+.spacer24{ height: 24px; }
+.spacer32{ height: 32px; }
+.spacer40{ height: 40px; }
+
+.primaryBtn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 54px;
+  padding: 0 22px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: var(--navy);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(11, 18, 32, 0.14);
+  transition: transform .12s ease, background .12s ease;
+}
+
+.primaryBtn:hover{ transform: translateY(-1px); background: var(--navy2); }
+.primaryBtn:active{ transform: translateY(0px); }
+
+.fullWidthBtn{
+  width: 100%;
+  max-width: 760px;
+}
+
+.secondaryLink{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.footerNote{
+  margin-top: 64px;
+  color: #7a8596;
+  font-size: 13px;
+}
+
+.card{
+  width: 100%;
+  max-width: 760px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius2);
+  background: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.cardPad{
+  padding: 22px 22px;
+}
+
+.cardTitle{
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.hr{
+  height: 1px;
+  background: var(--border);
+}
+
+.formGrid{
+  max-width: 760px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.field{
+  text-align: left;
+  margin-top: 18px;
+}
+
+.label{
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.input, .select{
+  width: 100%;
+  height: 56px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  outline: none;
+  font-size: 16px;
+}
+
+.input:focus, .select:focus{
+  border-color: rgba(11,18,32,0.35);
+  box-shadow: 0 0 0 4px rgba(11,18,32,0.08);
+}
+
+.pillRow{
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pill{
+  height: 52px;
+  min-width: 160px;
+  padding: 0 18px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform .12s ease, background .12s ease, border-color .12s ease;
+}
+
+.pill:hover{ transform: translateY(-1px); }
+.pillActive{
+  background: var(--navy);
+  color: #fff;
+  border-color: rgba(11,18,32,0.5);
+}
+
+.resultsHeader{
+  max-width: 760px;
+  margin: 0 auto 22px;
+  text-align: left;
+}
+
+.h2{
+  margin: 0 0 8px;
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: -0.3px;
+}
+
+.meta{
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.skillRow{
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 14px;
+  padding: 20px 22px;
+  align-items: start;
+}
+
+.skillIdx{
+  color: #8a95a6;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.skillName{
+  font-weight: 600;
+  margin: 0;
+}
+
+.skillSub{
+  margin: 6px 0 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.skillPct{
+  font-weight: 700;
+  color: var(--text);
+}
+
+.progressTrack{
+  height: 8px;
+  border-radius: 999px;
+  background: var(--track);
+  overflow: hidden;
+  width: min(520px, 55vw);
+}
+
+.progressFill{
+  height: 100%;
+  border-radius: 999px;
+  background: var(--navy);
+  width: 0%;
+}
+
+@media (max-width: 720px){
+  .skillRow{
+    grid-template-columns: 24px 1fr;
+    grid-template-areas:
+      "idx name"
+      "pct pct";
+  }
+  .skillPct{ grid-column: 1 / -1; justify-self: end; margin-top: -10px; }
+  .progressTrack{ width: 100%; }
+  .pill{ min-width: 140px; flex: 1; }
+}
