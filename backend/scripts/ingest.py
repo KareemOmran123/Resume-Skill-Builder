@@ -2,14 +2,11 @@ from __future__ import annotations
 
 import argparse
 import logging
-import os
 from pathlib import Path
 
 from skillpulse_ingest.models import IngestionQuery
 from skillpulse_ingest.storage_sqlite import SQLiteStore
-from skillpulse_ingest.pipeline import run_pipeline
-from skillpulse_ingest.sources.remotive import RemotiveAdapter
-from skillpulse_ingest.sources.arbeitnow import ArbeitnowAdapter
+from skillpulse_ingest.pipeline import run_pipeline, get_source, SOURCES
 
 def setup_logger(log_path: str) -> logging.Logger:
     logger = logging.getLogger("skillpulse_ingest")
@@ -35,6 +32,7 @@ def main() -> None:
     ap.add_argument("--level", choices=["any", "entry", "junior_mid"], default="any")
     ap.add_argument("--days", type=int, default=30)
     ap.add_argument("--max-results", type=int, default=250)
+    ap.add_argument("--source", choices=sorted(SOURCES.keys()), default=None)
     ap.add_argument("--db", default=str(Path("data") / "skillpulse.db"))
     ap.add_argument("--log", default=str(Path("logs") / "ingest.log"))
     args = ap.parse_args()
@@ -53,7 +51,7 @@ def main() -> None:
         max_results=args.max_results,
     )
 
-    adapters = [RemotiveAdapter(), ArbeitnowAdapter()]
+    adapters = [get_source(args.source)]
     run_pipeline(q, adapters, store, logger)
 
     store.close()
