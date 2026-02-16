@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 import re
+import time
 from typing import Any, Dict, List, Optional
 
 import requests
@@ -13,11 +14,44 @@ from ..models import IngestionQuery
 class TheirstackAdapter(SourceAdapter):
     name = "theirstack"
     BASE = "https://api.theirstack.com/v1"
+    MAX_RETRIES = 3
+    BACKOFF_SECONDS = 1.0
 
     def __init__(self, api_key: Optional[str] = None) -> None:
-        self.api_key = api_key or os.getenv("THEIRSTACK_API_KEY")
+        raw_key = api_key if api_key is not None else os.getenv("THEIRSTACK_API_KEY")
+        self.api_key = raw_key.strip() if isinstance(raw_key, str) else raw_key
         if not self.api_key:
             raise ValueError("THEIRSTACK_API_KEY is required for TheirstackAdapter")
+
+    @staticmethod
+    def _is_retryable(exc: requests.RequestException) -> bool:
+        if isinstance(exc, (requests.Timeout, requests.ConnectionError)):
+            return True
+        if isinstance(exc, requests.HTTPError):
+            resp = exc.response
+            status = resp.status_code if resp is not None else None
+            return status in {429, 500, 502, 503, 504}
+        return False
+
+    def _post_with_retry(self, payload: Dict[str, Any], headers: Dict[str, str]) -> requests.Response:
+        last_exc: requests.RequestException | None = None
+        for attempt in range(self.MAX_RETRIES + 1):
+            try:
+                resp = requests.post(
+                    f"{self.BASE}/jobs/search",
+                    json=payload,
+                    headers=headers,
+                    timeout=30,
+                )
+                resp.raise_for_status()
+                return resp
+            except requests.RequestException as exc:
+                last_exc = exc
+                if attempt >= self.MAX_RETRIES or not self._is_retryable(exc):
+                    raise
+                time.sleep(self.BACKOFF_SECONDS * (2 ** attempt))
+        assert last_exc is not None
+        raise last_exc
 
     def fetch(self, q: IngestionQuery) -> List[Dict[str, Any]]:
         out: List[Dict[str, Any]] = []
@@ -53,13 +87,7 @@ class TheirstackAdapter(SourceAdapter):
             if location_pattern:
                 payload["job_location_pattern_or"] = [location_pattern]
 
-            r = requests.post(
-                f"{self.BASE}/jobs/search",
-                json=payload,
-                headers=headers,
-                timeout=30,
-            )
-            r.raise_for_status()
+            r = self._post_with_retry(payload, headers)
             data = r.json()
             jobs = data.get("data", []) or data.get("jobs", []) or []
 

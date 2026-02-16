@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import datetime, timezone
 from typing import Optional, Type, Iterable
 
@@ -26,13 +27,27 @@ def get_source(name: Optional[str] = None) -> SourceAdapter:
     return adapter_cls()
 
 
+def _coerce_text(value: object) -> str:
+    if value is None:
+        return ""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, dict):
+        # Some APIs return richer objects for text-like fields (e.g., company).
+        name = value.get("name")
+        if isinstance(name, str):
+            return name
+        return json.dumps(value, ensure_ascii=False)
+    return str(value)
+
+
 def _normalize_remotive(raw: dict) -> JobPosting:
-    url = raw.get("url") or ""
-    title = raw.get("title") or ""
-    company = raw.get("company_name") or ""
-    location = raw.get("candidate_required_location")
-    date_posted = raw.get("publication_date")
-    description = raw.get("description") or ""
+    url = _coerce_text(raw.get("url"))
+    title = _coerce_text(raw.get("title"))
+    company = _coerce_text(raw.get("company_name"))
+    location = _coerce_text(raw.get("candidate_required_location")) or None
+    date_posted = _coerce_text(raw.get("publication_date")) or None
+    description = _coerce_text(raw.get("description"))
 
     role_bucket = classify_role(title, description)
     level_bucket = classify_level(title, description)
@@ -54,12 +69,17 @@ def _normalize_remotive(raw: dict) -> JobPosting:
 
 
 def _normalize_theirstack(raw: dict) -> JobPosting:
-    url = raw.get("final_url") or raw.get("url") or raw.get("source_url") or ""
-    title = raw.get("job_title") or ""
-    company = raw.get("company") or ""
-    location = raw.get("location") or raw.get("short_location") or raw.get("long_location")
-    date_posted = raw.get("date_posted")
-    description = raw.get("description") or ""
+    url = _coerce_text(raw.get("final_url")) or _coerce_text(raw.get("url")) or _coerce_text(raw.get("source_url"))
+    title = _coerce_text(raw.get("job_title"))
+    company = _coerce_text(raw.get("company"))
+    location = (
+        _coerce_text(raw.get("location"))
+        or _coerce_text(raw.get("short_location"))
+        or _coerce_text(raw.get("long_location"))
+        or None
+    )
+    date_posted = _coerce_text(raw.get("date_posted")) or None
+    description = _coerce_text(raw.get("description"))
 
     role_bucket = classify_role(title, description)
     level_bucket = classify_level(title, description)
@@ -101,7 +121,11 @@ def run_pipeline(
 
     for adapter in adapters:
         logger.info("Fetching from source=%s", adapter.name)
-        raw_jobs = adapter.fetch(q)
+        try:
+            raw_jobs = adapter.fetch(q)
+        except Exception as exc:
+            logger.error("Fetch failed for source=%s: %s", adapter.name, exc)
+            continue
         logger.info("Fetched %d raw jobs from source=%s", len(raw_jobs), adapter.name)
 
         postings: list[JobPosting] = []

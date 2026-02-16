@@ -1,0 +1,48 @@
+{
+  "title": "Junior Backend Software Engineer",
+  "subtitle": "Based on 312 job postings in Dallas, TX from the last 30 days",
+  "window": {
+    "days": 30
+  },
+  "filters": {
+    "location": "Dallas, TX",
+    "role_bucket": "backend",
+    "level_bucket": "entry",
+    "days": 30,
+    "max_results": 250
+  },
+  "totals": {
+    "postings_count": 312,
+    "unique_companies_count": 117
+  },
+  "skills": [
+    {
+      "name": "Python",
+      "count": 212,
+      "pct": 68
+    },
+    {
+      "name": "SQL / Databases",
+      "count": 200,
+      "pct": 64
+    },
+    {
+      "name": "REST APIs",
+      "count": 184,
+      "pct": 59
+    },
+    {
+      "name": "Git / Version Control",
+      "count": 162,
+      "pct": 52
+    },
+    {
+      "name": "Docker / Containers",
+      "count": 134,
+      "pct": 43
+    }
+  ],
+  "generated_at": "2026-02-16T17:00:00Z",
+  "schema_version": "1.0.0"
+}
+

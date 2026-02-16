@@ -1,0 +1,4 @@
+2026-02-16 10:56:25,465 INFO Fetching from source=remotive
+2026-02-16 10:56:26,280 INFO Fetched 0 raw jobs from source=remotive
+2026-02-16 10:56:26,280 INFO Upserted source=remotive inserted=0 skipped=0 (after filtering 0)
+2026-02-16 10:56:26,280 INFO Pipeline complete inserted=0 skipped=0

@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skillpulse.local/schemas/job_posting.schema.json",
+  "title": "JobPosting",
+  "description": "Normalized posting shape produced by ingestion before persistence.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "source",
+    "url",
+    "title",
+    "company",
+    "retrieved_at",
+    "role_bucket",
+    "level_bucket",
+    "description_raw",
+    "raw"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "theirstack",
+        "remotive"
+      ]
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "company": {
+      "type": "string",
+      "minLength": 1
+    },
+    "location": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "date_posted": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "ISO-8601 string when available from source."
+    },
+    "retrieved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "role_bucket": {
+      "type": "string",
+      "enum": [
+        "any",
+        "frontend",
+        "backend",
+        "fullstack"
+      ]
+    },
+    "level_bucket": {
+      "type": "string",
+      "enum": [
+        "any",
+        "entry",
+        "junior_mid",
+        "senior_excluded"
+      ]
+    },
+    "description_raw": {
+      "type": "string"
+    },
+    "raw": {
+      "type": "object",
+      "description": "Unmodified source payload for debugging/auditing."
+    }
+  }
+}
+

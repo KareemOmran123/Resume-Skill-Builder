@@ -1,8 +1,4 @@
-import sys
 import unittest
-from pathlib import Path
-
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
 from skillpulse_ingest.role_match import classify_level, classify_role, matches_query
 

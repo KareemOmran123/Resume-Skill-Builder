@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-import sys
 import tempfile
 import unittest
 from datetime import datetime, timezone
 from pathlib import Path
-
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
 from skillpulse_ingest.models import JobPosting
 from skillpulse_ingest.storage_sqlite import SQLiteStore

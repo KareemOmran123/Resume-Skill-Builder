@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://skillpulse.local/schemas/ingest_query.schema.json",
+  "title": "IngestionQuery",
+  "description": "Query contract for ingestion/filter operations.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "location",
+    "role_bucket",
+    "level_bucket"
+  ],
+  "properties": {
+    "location": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable location, e.g. Dallas, TX."
+    },
+    "role_bucket": {
+      "type": "string",
+      "enum": [
+        "any",
+        "frontend",
+        "backend",
+        "fullstack"
+      ]
+    },
+    "level_bucket": {
+      "type": "string",
+      "enum": [
+        "any",
+        "entry",
+        "junior_mid"
+      ]
+    },
+    "days": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 30
+    },
+    "max_results": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 250
+    }
+  }
+}
+

@@ -1,10 +1,6 @@
 import json
-import sys
 import unittest
 from datetime import datetime, timezone
-from pathlib import Path
-
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
 from skillpulse_ingest.models import JobPosting
 
@@ -28,7 +24,7 @@ class TestModels(unittest.TestCase):
             company="Acme",
             location="Dallas, TX",
             date_posted="2026-02-01T12:00:00Z",
-        retrieved_at=datetime.now(timezone.utc).isoformat(),
+            retrieved_at=datetime.now(timezone.utc).isoformat(),
             role_bucket="backend",
             level_bucket="entry",
             description_raw="Build APIs",

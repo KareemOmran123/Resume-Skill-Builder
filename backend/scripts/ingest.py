@@ -11,7 +11,9 @@ from skillpulse_ingest.pipeline import run_pipeline, get_source, SOURCES
 def setup_logger(log_path: str) -> logging.Logger:
     logger = logging.getLogger("skillpulse_ingest")
     logger.setLevel(logging.INFO)
-    logger.handlers.clear()
+    for handler in list(logger.handlers):
+        handler.close()
+        logger.removeHandler(handler)
 
     fmt = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 

@@ -1,10 +1,8 @@
 import os
-import sys
 import unittest
-from pathlib import Path
 from unittest.mock import patch
 
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
+import requests
 
 from skillpulse_ingest.models import IngestionQuery
 from skillpulse_ingest.sources.theirstack import TheirstackAdapter
@@ -53,3 +51,24 @@ class TestTheirstackAdapter(unittest.TestCase):
                 self.assertIn("Dallas", body["job_location_pattern_or"][0])
                 self.assertEqual(body["job_title_or"], ["backend"])
                 self.assertIn("job_seniority_or", body)
+
+    def test_fetch_retries_transient_errors(self) -> None:
+        payload = {"data": []}
+        with patch.dict(os.environ, {"THEIRSTACK_API_KEY": "test-key"}, clear=True):
+            with patch("skillpulse_ingest.sources.theirstack.time.sleep", return_value=None):
+                with patch("skillpulse_ingest.sources.theirstack.requests.post") as mock_post:
+                    mock_post.side_effect = [
+                        requests.ConnectionError("temporary"),
+                        DummyResponse(payload),
+                    ]
+                    adapter = TheirstackAdapter()
+                    q = IngestionQuery(
+                        location="Dallas, TX",
+                        role_bucket="any",
+                        level_bucket="any",
+                        days=7,
+                        max_results=5,
+                    )
+                    jobs = adapter.fetch(q)
+                    self.assertEqual(jobs, [])
+                    self.assertEqual(mock_post.call_count, 2)

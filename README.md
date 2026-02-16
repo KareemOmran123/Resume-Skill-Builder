@@ -12,3 +12,10 @@ npm install
 
 ### Running The Server
 npm run dev
+
+### Backend JSON Contract
+Backend/frontend JSON schema docs are in:
+
+- `backend/docs/JSON_CONTRACT.md`
+- `backend/docs/schemas/`
+- `backend/docs/examples/`

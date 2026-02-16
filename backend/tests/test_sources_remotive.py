@@ -1,10 +1,8 @@
-import sys
 import unittest
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import patch
 
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
+import requests
 
 from skillpulse_ingest.models import IngestionQuery
 from skillpulse_ingest.sources.remotive import RemotiveAdapter
@@ -76,3 +74,23 @@ class TestRemotiveAdapter(unittest.TestCase):
             adapter.fetch(q)
             _, kwargs = mock_get.call_args
             self.assertEqual(kwargs.get("params"), {})
+
+    def test_fetch_retries_transient_errors(self) -> None:
+        payload = {"jobs": []}
+        with patch("skillpulse_ingest.sources.remotive.time.sleep", return_value=None):
+            with patch("skillpulse_ingest.sources.remotive.requests.get") as mock_get:
+                mock_get.side_effect = [
+                    requests.ConnectionError("temporary"),
+                    DummyResponse(payload),
+                ]
+                adapter = RemotiveAdapter()
+                q = IngestionQuery(
+                    location="Dallas, TX",
+                    role_bucket="any",
+                    level_bucket="any",
+                    days=2,
+                    max_results=10,
+                )
+                jobs = adapter.fetch(q)
+                self.assertEqual(jobs, [])
+                self.assertEqual(mock_get.call_count, 2)
