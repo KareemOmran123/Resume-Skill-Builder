@@ -1,7 +1,6 @@
 # RESUME-SKILL-BUILDER
 This is a software that will use recent job posting to identify top 5 skills needed for a position in your area.
 
-
 ### Prerequisites To Running Website
 - Node.js
 
@@ -13,9 +12,10 @@ npm install
 ### Running The Server
 npm run dev
 
-### Backend JSON Contract
-Backend/frontend JSON schema docs are in:
+### Documentation Index
 
-- `backend/docs/JSON_CONTRACT.md`
+- End-to-end workflow: `docs/PROJECT_WORKFLOW.md`
+- Backend internals/workflow: `backend/docs/BACKEND_WORKFLOW.md`
+- Backend/frontend JSON contract: `backend/docs/JSON_CONTRACT.md`
 - `backend/docs/schemas/`
 - `backend/docs/examples/`
