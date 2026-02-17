@@ -7,21 +7,22 @@ export default function TopNav() {
   const showBack = loc.pathname !== "/";
 
   return (
-    <div className="topNav">
-      <div className="container" style={{ display: "flex", alignItems: "center", gap: 14 }}>
+    <header className="topNav">
+      <div className="container topNavInner">
         {showBack ? (
-          <div className="secondaryLink" onClick={() => nav(-1)} role="button" tabIndex={0}>
-            <span aria-hidden="true">←</span>
+          <button className="secondaryLink" onClick={() => nav(-1)} type="button">
+            <span aria-hidden="true">&larr;</span>
             <span>Back</span>
-          </div>
+          </button>
         ) : (
-          <div style={{ width: 72 }} />
+          <div className="navBackPlaceholder" aria-hidden="true" />
         )}
 
-        <div className="brand" style={{ marginLeft: showBack ? 0 : 0 }}>
-          SkillPulse
+        <div className="brandWrap">
+          <span className="brandDot" aria-hidden="true" />
+          <div className="brand">SkillPulse</div>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
