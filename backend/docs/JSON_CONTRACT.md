@@ -1,8 +1,8 @@
 # JSON Contract (Backend -> Frontend)
 
-This document defines the payload shapes the frontend can rely on.
+This document defines payload shapes the frontend can rely on.
 
-## Version
+## Versioning
 
 - `schema_version`: `1.0.0`
 - JSON Schema draft: `2020-12`
@@ -13,31 +13,44 @@ This document defines the payload shapes the frontend can rely on.
 - `backend/docs/schemas/job_posting.schema.json`
 - `backend/docs/schemas/skill_insights_response.schema.json`
 
-## Intended Usage
+## Which Stage Uses Which Schema
 
-- `IngestionQuery`: request/filter contract for ingest/analysis runs.
-- `JobPosting`: normalized internal posting shape from adapters.
-- `SkillInsightsResponse`: frontend-facing response for the results page.
+- Ingestion/filter input: `IngestionQuery`
+- Normalized persistence object: `JobPosting`
+- Frontend-ready insights output: `SkillInsightsResponse`
 
-## Frontend Mapping Notes
+## `SkillInsightsResponse` Field Notes
 
-Current `src/pages/Results.jsx` expects:
+Required fields (per schema):
 
 - `title`
 - `subtitle`
-- `skills[]` with each item containing:
-- `name`
-- `pct`
-
-`SkillInsightsResponse` includes those fields and adds:
-
+- `window.days`
 - `filters`
-- `window`
-- `totals`
+- `totals.postings_count`
+- `totals.unique_companies_count`
+- `skills[]` with `name`, `count`, `pct`
+
+Optional but emitted by current script:
+
 - `generated_at`
 - `schema_version`
 
-This allows the frontend to keep current UI behavior while having stable metadata for future features.
+## Producer Script
+
+- `backend/scripts/skill_insights.py` produces this payload.
+- It reads pre-extracted data from `posting_skills` and posting totals from `postings`.
+
+## Frontend Mapping
+
+Current `src/pages/Results.jsx` requires:
+
+- `title`
+- `subtitle`
+- `skills[].name`
+- `skills[].pct`
+
+The response also includes totals and filters for future UX extensions without contract changes.
 
 ## Example Payload
 
@@ -45,7 +58,6 @@ This allows the frontend to keep current UI behavior while having stable metadat
 
 ## Compatibility Rules
 
-1. Additive fields are allowed in minor version updates.
-2. Renaming/removing required fields requires a major version bump.
-3. Frontend should fail closed if `schema_version` major changes.
-
+1. Additive fields are allowed in minor versions.
+2. Removing/renaming required fields requires a major version bump.
+3. Frontend should reject unsupported major `schema_version` values.

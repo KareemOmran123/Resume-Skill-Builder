@@ -2,72 +2,78 @@
 
 This document explains how the project currently works end to end.
 
-## Current State
+## Architecture Snapshot
 
-- Frontend is a React/Vite app.
-- Backend is a Python ingestion pipeline that fetches and stores normalized job postings.
-- Frontend is currently using local mock data in `src/data/skills.js`.
-- Backend output is persisted in SQLite and documented via JSON schemas in `backend/docs/schemas/`.
-- There is no live API wiring from frontend to backend yet.
+- Frontend: React + Vite (`src/`)
+- Backend: Python ingestion + extraction + aggregation (`backend/src/skillpulse_ingest/`)
+- Storage: SQLite (`postings`, `posting_skills`)
+- Contract: JSON schema for frontend response (`backend/docs/schemas/skill_insights_response.schema.json`)
 
-## Repository Overview
+## Repository Layout
 
-- `src/`: frontend UI.
-- `backend/src/skillpulse_ingest/`: ingestion domain logic.
-- `backend/scripts/`: operational scripts for ingest and DB inspection.
-- `backend/tests/`: unit and integration tests.
-- `backend/docs/`: backend contracts and workflows.
-- `docs/`: project-level docs.
+- `src/`: frontend pages/components and mock data.
+- `backend/src/skillpulse_ingest/`: backend domain modules.
+- `backend/scripts/`: operational CLIs.
+- `backend/tests/`: backend tests.
+- `backend/docs/`: backend documentation and schemas.
+- `docs/`: project-level workflow docs.
 
-## Frontend Workflow (Current)
+## End-to-End Data Flow
 
-1. User lands on `src/pages/Landing.jsx`.
-2. User selects focus filters in `src/pages/SelectFocus.jsx`.
-3. Results page `src/pages/Results.jsx` renders a dataset from `src/data/skills.js`.
-4. No backend request is made yet.
+1. Ingest raw postings from external provider APIs.
+2. Normalize postings into canonical backend records.
+3. Persist normalized records into `postings`.
+4. Extract hard skills from each posting into `posting_skills`.
+5. Aggregate skills by filtered posting set.
+6. Emit a frontend-ready `SkillInsightsResponse` JSON payload.
 
-## Backend Workflow (Current)
+## Sprint 1 (Ingestion)
 
-1. Run ingest script: `backend/scripts/ingest.py`.
-2. Script builds an `IngestionQuery` from CLI args.
-3. Script selects a source adapter (`theirstack` default, `remotive` optional).
-4. Adapter fetches raw jobs from provider API with retry/backoff.
-5. Pipeline normalizes raw rows into `JobPosting`.
-6. Pipeline classifies role/level and applies query matching filters.
-7. SQLite store inserts new rows and skips duplicates by `id`.
-8. Data is written to `postings` table in SQLite.
+1. Run `backend/scripts/ingest.py`.
+2. Build `IngestionQuery` from CLI arguments.
+3. Fetch raw rows via source adapter (`theirstack` default, `remotive` optional).
+4. Normalize records and classify role/level.
+5. Insert unique rows into `postings`.
 
-## Data Contracts
+## Sprint 2 (Skill Extraction + Normalization)
 
-- JSON contract entrypoint: `backend/docs/JSON_CONTRACT.md`.
-- Schemas:
-- `backend/docs/schemas/ingest_query.schema.json`
-- `backend/docs/schemas/job_posting.schema.json`
-- `backend/docs/schemas/skill_insights_response.schema.json`
-- Example:
-- `backend/docs/examples/skill_insights_response.example.json`
+1. Run `backend/scripts/extract_skills.py`.
+2. Load filtered postings via `SQLiteStore.iter_postings(...)`.
+3. Clean title/description (`clean_text`) and extract hard skills (`extract_skill_counts`).
+4. Normalize aliases to canonical skill names through the catalog.
+5. Upsert per-posting skill counts into `posting_skills`.
+6. Optionally output a sample extraction JSON for manual review.
 
-## Testing Workflow
+## Sprint 3 (Aggregation + Insights Output)
 
-1. Install backend package for local imports:
+1. Run `backend/scripts/skill_insights.py`.
+2. Compute filtered totals:
+- `postings_count`
+- `unique_companies_count`
+3. Aggregate skill prevalence using distinct postings containing each skill.
+4. Calculate percentages with denominator = filtered posting count.
+5. Sort stably (`pct desc`, `count desc`, `name asc`).
+6. Emit schema-compatible `SkillInsightsResponse` JSON.
+
+## Frontend Status
+
+- Current UI still reads mock data from `src/data/skills.js`.
+- Backend now produces the final payload shape that frontend can consume.
+
+## Standard Runbook
+
+1. Install backend package:
 - `python -m pip install -e backend`
-2. Run backend tests:
-- `python -m unittest discover -s backend\tests`
-3. Optional live TheirStack integration test (requires key):
-- `python -m unittest backend.tests.test_integration_theirstack_live`
-
-## Operational Workflow
-
-1. Set API key:
-- `THEIRSTACK_API_KEY`
-2. Run ingest:
+2. Ingest postings:
 - `python backend\scripts\ingest.py --location "Dallas, TX" --role backend --level entry --days 30`
-3. Inspect DB:
-- `python backend\scripts\inspect_db.py --db backend\data\skillpulse.db --limit 10`
+3. Extract skills:
+- `python backend\scripts\extract_skills.py --db backend\data\skillpulse.db --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
+4. Generate insights JSON:
+- `python backend\scripts\skill_insights.py --db backend\data\skillpulse.db --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
+5. Run tests:
+- `python -m unittest discover -s backend\tests`
 
-## What Is Not Implemented Yet
+## Known Gaps
 
-- Backend endpoint that emits `SkillInsightsResponse` directly for frontend.
-- Frontend fetch logic against backend contract.
-- Scheduled/automated ingest orchestration.
-
+- Frontend is not yet wired to backend API/CLI output.
+- No scheduler/orchestrator yet for automated refresh.
