@@ -27,6 +27,12 @@ This document explains how the project currently works end to end.
 5. Aggregate skills by filtered posting set.
 6. Emit a frontend-ready `SkillInsightsResponse` JSON payload.
 
+## Default Backend Artifacts
+
+- SQLite database: `backend/data/skillpulse.db`
+- Ingest log: `backend/logs/ingest.log`
+- Extraction sample JSON: `backend/logs/skills_sample.json`
+
 ## Sprint 1 (Ingestion)
 
 1. Run `backend/scripts/ingest.py`.
@@ -64,13 +70,15 @@ This document explains how the project currently works end to end.
 
 1. Install backend package:
 - `python -m pip install -e backend`
-2. Ingest postings:
+2. Recommended one-command backend run:
+- `python backend\scripts\run_backend.py --location "Dallas, TX" --role backend --level entry --days 30`
+3. Optional step-by-step ingest:
 - `python backend\scripts\ingest.py --location "Dallas, TX" --role backend --level entry --days 30`
-3. Extract skills:
-- `python backend\scripts\extract_skills.py --db backend\data\skillpulse.db --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
-4. Generate insights JSON:
-- `python backend\scripts\skill_insights.py --db backend\data\skillpulse.db --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
-5. Run tests:
+4. Optional step-by-step extract:
+- `python backend\scripts\extract_skills.py --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
+5. Optional step-by-step insights JSON:
+- `python backend\scripts\skill_insights.py --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
+6. Run tests:
 - `python -m unittest discover -s backend\tests`
 
 ## Known Gaps
