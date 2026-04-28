@@ -1,0 +1,77 @@
+name: AI Code Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number to review.
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  openai-review:
+    name: OpenAI Codex review
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Require OpenAI secret
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Set OPENAI_API_KEY as a GitHub Actions secret before running AI Code Review."
+            exit 1
+          fi
+
+      - name: Checkout PR merge commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: refs/pull/${{ inputs.pr_number }}/merge
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Collect PR context
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          {
+            echo "# Pull Request Metadata"
+            gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json title,body,baseRefName,headRefName,additions,deletions,changedFiles,url
+            echo
+            echo "# Pull Request Diff"
+            gh pr diff "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --patch
+          } > ai-review-context.md
+
+      - name: Run OpenAI Codex review
+        id: codex
+        uses: openai/codex-action@d1dcaa827fb02b11530df0bdd69e00ee001ab077
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          sandbox: read-only
+          effort: medium
+          prompt: |
+            Review the pull request represented in ai-review-context.md.
+
+            Focus on actionable bugs, security risks, regressions, test gaps, and maintainability concerns.
+            Keep the review concise. Reference files and lines when the diff gives enough context.
+            Do not rewrite the entire patch and do not comment on unchanged code unless it affects the changed behavior.
+
+      - name: Publish AI review comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          CODEX_FINAL_MESSAGE: ${{ steps.codex.outputs.final-message }}
+        run: |
+          if [ -z "$CODEX_FINAL_MESSAGE" ]; then
+            echo "No AI review output was produced."
+            exit 0
+          fi
+          printf '%s\n' "$CODEX_FINAL_MESSAGE" > ai-review.md
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file ai-review.md

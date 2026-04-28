@@ -1,0 +1,54 @@
+name: Staging Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - package.json
+      - package-lock.json
+      - index.html
+      - vite.config.js
+      - src/**
+      - backend/pyproject.toml
+      - backend/requirements.txt
+      - backend/src/**
+      - backend/scripts/**
+      - backend/tests/**
+      - .github/workflows/deploy-staging.yml
+      - .github/workflows/reusable-frontend-ci.yml
+      - .github/workflows/reusable-backend-ci.yml
+      - .github/workflows/reusable-staging-deploy.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  frontend:
+    name: Frontend gate
+    uses: ./.github/workflows/reusable-frontend-ci.yml
+    with:
+      node-version: "20"
+
+  backend:
+    name: Backend gate
+    uses: ./.github/workflows/reusable-backend-ci.yml
+    with:
+      python-version: "3.11"
+
+  deploy-staging:
+    name: Staging deploy scaffold
+    needs:
+      - frontend
+      - backend
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/reusable-staging-deploy.yml
+    with:
+      environment-name: staging
