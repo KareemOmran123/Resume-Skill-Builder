@@ -1,14 +1,20 @@
 from __future__ import annotations
 
 import sqlite3
-from pathlib import Path
 import argparse
 
-def main() -> None:
+from skillpulse_ingest.runtime_paths import DEFAULT_DB_PATH
+
+
+def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--db", default=str(Path("data") / "skillpulse.db"))
+    ap.add_argument("--db", default=str(DEFAULT_DB_PATH))
     ap.add_argument("--limit", type=int, default=5)
-    args = ap.parse_args()
+    return ap
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = build_parser().parse_args(argv)
 
     conn = sqlite3.connect(args.db)
     cur = conn.cursor()

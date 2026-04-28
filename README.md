@@ -20,15 +20,25 @@ This project analyzes job postings and surfaces the top hard skills needed for a
 - `python -m pip install -e backend`
 2. Set API key for Theirstack ingestion:
 - PowerShell: `$env:THEIRSTACK_API_KEY="..."`
+3. Backend artifacts now default to:
+- `backend\data\skillpulse.db`
+- `backend\logs\ingest.log`
+- `backend\logs\skills_sample.json` (when requested, or via the combined runner)
 
-## Backend Run Order
+## Recommended Backend Run
+
+1. Run the full backend pipeline in one command:
+- `python backend\scripts\run_backend.py --location "Dallas, TX" --role backend --level entry --days 30`
+- This ingests postings, extracts skills, writes the SQLite DB/log artifacts under `backend\`, and prints the final insights JSON to stdout.
+
+## Optional Manual Backend Run Order
 
 1. Ingest postings:
 - `python backend\scripts\ingest.py --location "Dallas, TX" --role backend --level entry --days 30`
 2. Extract and normalize skills:
-- `python backend\scripts\extract_skills.py --db backend\data\skillpulse.db --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
+- `python backend\scripts\extract_skills.py --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
 3. Generate insights JSON:
-- `python backend\scripts\skill_insights.py --db backend\data\skillpulse.db --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
+- `python backend\scripts\skill_insights.py --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
 
 ## Tests
 

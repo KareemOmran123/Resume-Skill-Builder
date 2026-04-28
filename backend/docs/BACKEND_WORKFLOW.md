@@ -65,6 +65,12 @@ This document explains backend modules, runtime flow, and operation commands.
 4. Computes percentages and stable ordering.
 5. Emits JSON matching `SkillInsightsResponse` schema.
 
+### 4) Combined Runner
+
+1. `backend/scripts/run_backend.py` runs ingestion, extraction, and insights generation in order.
+2. Shared defaults keep all backend artifacts under `backend/data` and `backend/logs`.
+3. Final insights JSON is printed to stdout, and extraction samples are written to `backend/logs/skills_sample.json` by default.
+
 ## Filtering Rules
 
 - Shared filter object: `IngestionQuery`.
@@ -91,14 +97,16 @@ This document explains backend modules, runtime flow, and operation commands.
 
 1. Install backend package:
 - `python -m pip install -e backend`
-2. Run ingest:
+2. Recommended one-command run:
+- `python backend\scripts\run_backend.py --location "Dallas, TX" --role backend --level entry --days 30`
+3. Optional step-by-step ingest:
 - `python backend\scripts\ingest.py --location "Dallas, TX" --role backend --level entry --days 30`
-3. Run extraction:
-- `python backend\scripts\extract_skills.py --db backend\data\skillpulse.db --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
-4. Generate insights:
-- `python backend\scripts\skill_insights.py --db backend\data\skillpulse.db --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
-5. Inspect raw DB:
-- `python backend\scripts\inspect_db.py --db backend\data\skillpulse.db --limit 10`
+4. Optional step-by-step extraction:
+- `python backend\scripts\extract_skills.py --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
+5. Optional step-by-step insights:
+- `python backend\scripts\skill_insights.py --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
+6. Inspect raw DB:
+- `python backend\scripts\inspect_db.py --limit 10`
 
 ## Tests
 

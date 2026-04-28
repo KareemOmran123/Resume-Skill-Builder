@@ -3,6 +3,7 @@ src/skillpulse_ingest/__init__.py
 src/skillpulse_ingest/models.py
 src/skillpulse_ingest/pipeline.py
 src/skillpulse_ingest/role_match.py
+src/skillpulse_ingest/runtime_paths.py
 src/skillpulse_ingest/skill_aggregate.py
 src/skillpulse_ingest/skill_extract.py
 src/skillpulse_ingest/skills_catalog.py
@@ -20,6 +21,7 @@ tests/test_integration_theirstack_live.py
 tests/test_models.py
 tests/test_pipeline.py
 tests/test_role_match.py
+tests/test_script_defaults.py
 tests/test_scripts_ingest.py
 tests/test_skill_aggregate.py
 tests/test_skill_extract.py
