@@ -51,7 +51,7 @@ jobs:
 
       - name: Run OpenAI Codex review
         id: codex
-        uses: openai/codex-action@d1dcaa827fb02b11530df0bdd69e00ee001ab077
+        uses: openai/codex-action@5c3f4ccdb2b8790f73d6b21751ac00e602aa0c02
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           sandbox: read-only
