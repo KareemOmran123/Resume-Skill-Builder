@@ -48,6 +48,7 @@ This project analyzes job postings and surfaces the top hard skills needed for a
 ## Documentation Index
 
 - End-to-end workflow: `docs/PROJECT_WORKFLOW.md`
+- CI/CD and GitHub Actions: `docs/CI_CD.md`
 - Backend internals/workflow: `backend/docs/BACKEND_WORKFLOW.md`
 - Backend/frontend JSON contract: `backend/docs/JSON_CONTRACT.md`
 - Schemas: `backend/docs/schemas/`
