@@ -3,12 +3,11 @@ from datetime import datetime, timezone
 
 from skillpulse_ingest.models import IngestionQuery
 from skillpulse_ingest.pipeline import get_source, run_pipeline
-from skillpulse_ingest.sources.careers import CareersAdapter
-from skillpulse_ingest.sources.remotive import RemotiveAdapter
+from skillpulse_ingest.sources.jobspy import JobSpyAdapter
 
 
 class FakeAdapter:
-    name = "theirstack"
+    name = "jobspy"
 
     def __init__(self, rows: list[dict]) -> None:
         self._rows = rows
@@ -18,7 +17,7 @@ class FakeAdapter:
 
 
 class BrokenAdapter:
-    name = "theirstack"
+    name = "jobspy"
 
     def fetch(self, q: IngestionQuery) -> list[dict]:
         raise RuntimeError("network failure")
@@ -45,27 +44,29 @@ class FakeLogger:
 
 
 class TestPipeline(unittest.TestCase):
-    def test_get_source_default_is_careers(self) -> None:
+    def test_get_source_default_is_jobspy(self) -> None:
         adapter = get_source()
-        self.assertIsInstance(adapter, CareersAdapter)
+        self.assertIsInstance(adapter, JobSpyAdapter)
 
     def test_run_pipeline_filters_senior(self) -> None:
         rows = [
             {
                 "id": "1",
-                "job_title": "Senior Backend Engineer",
+                "title": "Senior Backend Engineer",
                 "company": "Acme",
                 "description": "Senior role",
                 "date_posted": datetime.now(timezone.utc).isoformat(),
-                "final_url": "https://example.com/senior",
+                "job_url": "https://example.com/senior",
+                "site": "indeed",
             },
             {
                 "id": "2",
-                "job_title": "Junior Backend Engineer",
+                "title": "Junior Backend Engineer",
                 "company": "Acme",
                 "description": "Entry level role",
                 "date_posted": datetime.now(timezone.utc).isoformat(),
-                "final_url": "https://example.com/junior",
+                "job_url": "https://example.com/junior",
+                "site": "indeed",
             },
         ]
 
@@ -88,21 +89,21 @@ class TestPipeline(unittest.TestCase):
         with self.assertRaises(ValueError):
             get_source("unknown")
 
-    def test_get_source_remotive(self) -> None:
-        adapter = get_source("remotive")
-        self.assertIsInstance(adapter, RemotiveAdapter)
+    def test_get_source_jobspy(self) -> None:
+        adapter = get_source("jobspy")
+        self.assertIsInstance(adapter, JobSpyAdapter)
 
-    def test_run_pipeline_normalizes_careers_source(self) -> None:
+    def test_run_pipeline_normalizes_jobspy_source(self) -> None:
         rows = [
             {
                 "id": "abc",
-                "source_kind": "lever",
+                "site": "linkedin",
                 "title": "Junior Backend Engineer",
                 "company": "Acme",
                 "location": "Dallas, TX",
                 "description": "Build Python APIs and microservices.",
                 "date_posted": datetime.now(timezone.utc).isoformat(),
-                "url": "https://example.com/careers/abc",
+                "job_url": "https://example.com/jobs/abc",
             }
         ]
 
@@ -116,12 +117,9 @@ class TestPipeline(unittest.TestCase):
         store = FakeStore()
         logger = FakeLogger()
 
-        class CareersFakeAdapter(FakeAdapter):
-            name = "careers"
-
-        run_pipeline(q, [CareersFakeAdapter(rows)], store, logger)
+        run_pipeline(q, [FakeAdapter(rows)], store, logger)
         self.assertEqual(len(store.received), 1)
-        self.assertEqual(store.received[0].source, "careers")
+        self.assertEqual(store.received[0].source, "jobspy")
         self.assertEqual(store.received[0].title, "Junior Backend Engineer")
 
     def test_run_pipeline_handles_fetch_errors(self) -> None:
@@ -141,11 +139,11 @@ class TestPipeline(unittest.TestCase):
         rows = [
             {
                 "id": "3",
-                "job_title": "Junior Backend Engineer",
+                "title": "Junior Backend Engineer",
                 "company": {"name": "Acme"},
                 "description": ["entry", "backend"],
                 "date_posted": datetime.now(timezone.utc),
-                "final_url": "https://example.com/field-shapes",
+                "job_url": "https://example.com/field-shapes",
             }
         ]
 
@@ -161,3 +159,37 @@ class TestPipeline(unittest.TestCase):
         run_pipeline(q, [FakeAdapter(rows)], store, logger)
         self.assertEqual(len(store.received), 1)
         self.assertEqual(store.received[0].company, "Acme")
+
+    def test_run_pipeline_filters_jobspy_non_software_titles(self) -> None:
+        rows = [
+            {
+                "id": "4",
+                "title": "AI-Driven OSINT Analyst",
+                "company": "Acme",
+                "description": "Machine Learning Engineer duties with Python.",
+                "date_posted": datetime.now(timezone.utc),
+                "job_url": "https://example.com/noisy",
+            },
+            {
+                "id": "5",
+                "title": "Junior Software Developer",
+                "company": "Beta",
+                "description": "Build Python APIs.",
+                "date_posted": datetime.now(timezone.utc),
+                "job_url": "https://example.com/software",
+            },
+        ]
+
+        q = IngestionQuery(
+            location="United States",
+            role_bucket="any",
+            level_bucket="any",
+            days=7,
+            max_results=50,
+        )
+        store = FakeStore()
+        logger = FakeLogger()
+        run_pipeline(q, [FakeAdapter(rows)], store, logger)
+
+        self.assertEqual(len(store.received), 1)
+        self.assertEqual(store.received[0].title, "Junior Software Developer")

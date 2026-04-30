@@ -22,7 +22,7 @@ Backend CI uses Python 3.10, 3.11, and 3.12:
 - `python -m pip install -e backend`
 - `python -m unittest discover -s backend/tests`
 
-The live TheirStack integration test is skipped unless `THEIRSTACK_API_KEY` is present. Do not add that secret to default CI unless you intentionally want pull request checks to call the live API.
+Backend tests should mock JobSpy calls. Do not run live job-board scraping in default CI.
 
 ## Deployment Scaffold
 
@@ -55,7 +55,6 @@ Set `CONTAINER_IMAGE` as a repository or environment variable to enable the opti
 Optional secrets:
 
 - `OPENAI_API_KEY`: enables the manual `AI Code Review` workflow.
-- `THEIRSTACK_API_KEY`: enables live TheirStack integration checks when deliberately supplied to a manual or scheduled backend workflow.
 - `GEMINI_API_KEY`: reserve for a future Gemini review workflow.
 - `ANTHROPIC_API_KEY`: reserve for a future Claude review workflow.
 

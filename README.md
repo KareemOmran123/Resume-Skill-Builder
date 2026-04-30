@@ -1,6 +1,6 @@
 # RESUME-SKILL-BUILDER
 
-This project analyzes junior software engineering job postings from curated company career boards and surfaces the top hard skills needed in a selected location.
+This project analyzes junior software engineering job postings collected through JobSpy and surfaces the top hard skills needed in a selected location.
 
 ## Prerequisites
 
@@ -18,44 +18,38 @@ This project analyzes junior software engineering job postings from curated comp
 
 1. Install backend package:
 - `python -m pip install -e backend`
-2. Configure in-house career sources:
-- Copy `backend\data\career_sources.example.json` to `backend\data\career_sources.json`
-- Add only public company career pages or public ATS job-board endpoints you are allowed to fetch.
-- Enable entries by setting `"enabled": true`.
-3. Optional: set API key for TheirStack ingestion only if you explicitly use `--source theirstack`:
-- PowerShell: `$env:THEIRSTACK_API_KEY="..."`
-4. Backend artifacts now default to:
+2. Backend artifacts default to:
 - `backend\data\skillpulse.db`
 - `backend\logs\ingest.log`
 - `backend\logs\skills_sample.json` (when requested, or via the combined runner)
 
-## In-House Career Source
+## JobSpy Source
 
-The default ingestion source is `careers`, a curated in-house collector. It avoids broad job-board scraping and instead reads from configured public career sources. The current local source list contains more than 100 configured company career boards.
+The default ingestion source is `jobspy`, using the `python-jobspy` package.
 
-- `greenhouse`: public Greenhouse board API using `board_token`
-- `lever`: public Lever postings API using `company_slug`
-- `ashby`: public Ashby job board API using `org_slug`
-- `generic_html`: a conservative fallback for public careers pages, with `robots.txt` checks enabled by default
+Default boards:
 
-Career-board fetches run concurrently. Tune the number of parallel source fetches with:
+- `indeed`
+- `linkedin`
+- `zip_recruiter`
+- `google`
 
-- PowerShell: `$env:CAREER_FETCH_WORKERS="16"`
+Override the boards with a comma-separated environment variable:
 
-Example source config:
+- PowerShell: `$env:JOBSPY_SITES="indeed,linkedin,zip_recruiter,google"`
 
-```json
-[
-  {
-    "company": "Acme",
-    "type": "lever",
-    "company_slug": "acme",
-    "enabled": true
-  }
-]
-```
+Optional JobSpy settings can also be supplied through environment variables:
 
-The local `backend\data\career_sources.json` file is ignored by git so you can curate sources for your own use.
+- `JOBSPY_SEARCH_TERM`
+- `JOBSPY_GOOGLE_SEARCH_TERM`
+- `JOBSPY_DISTANCE`
+- `JOBSPY_JOB_TYPE`
+- `JOBSPY_REMOTE`
+- `JOBSPY_EASY_APPLY`
+- `JOBSPY_PROXIES`
+- `JOBSPY_LINKEDIN_FETCH_DESCRIPTION`
+- `JOBSPY_DESCRIPTION_FORMAT`
+- `JOBSPY_VERBOSE`
 
 ## Dynamic Locations
 
@@ -74,7 +68,7 @@ The frontend Scope dropdown loads that endpoint and shows locations such as San 
 ## Optional Manual Backend Run Order
 
 1. Ingest postings:
-- `python backend\scripts\ingest.py --source careers --location "San Francisco Bay Area" --role any --level entry --days 30`
+- `python backend\scripts\ingest.py --source jobspy --location "San Francisco Bay Area" --role any --level entry --days 30 --out backend\logs\jobs.json`
 2. Extract and normalize skills:
 - `python backend\scripts\extract_skills.py --location "San Francisco Bay Area" --role any --level entry --days 30 --sample-out backend\logs\skills_sample.json`
 3. Generate insights JSON:

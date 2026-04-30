@@ -12,6 +12,7 @@ dependencies = [
   "python-dateutil>=2.9.0",
   "fastapi",
   "uvicorn",
+  "python-jobspy>=1.1.79",
 ]
 
 [tool.setuptools]

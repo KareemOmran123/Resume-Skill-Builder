@@ -52,9 +52,9 @@ This document explains backend modules, runtime flow, and operation commands.
 4. Normalize + classify + filter.
 5. Upsert into `postings`.
 
-Default source: `careers`.
+Default source: `jobspy`.
 
-The `careers` adapter reads `backend/data/career_sources.json`, which can include Greenhouse, Lever, Ashby, and conservative generic HTML sources. It fetches enabled company boards concurrently with a bounded worker pool. The default worker count is `8`, and can be overridden with `CAREER_FETCH_WORKERS`.
+The `jobspy` adapter calls `python-jobspy` and normalizes its dataframe output into the backend `JobPosting` shape. By default it searches Indeed, LinkedIn, ZipRecruiter, and Google. Override that list with `JOBSPY_SITES`, for example `indeed,linkedin`.
 
 ### 2) Skill Extraction Pipeline (Sprint 2)
 
@@ -98,13 +98,7 @@ The frontend Scope dropdown calls `/api/locations`, so location options are gene
 
 ## Reliability Behavior
 
-- TheirStack adapter retries on transient failures:
-- connection errors
-- timeouts
-- HTTP `429/500/502/503/504`
-- Backoff: exponential, base `1.0s`, max retries `3`.
-- Careers adapter isolates per-company failures so one unavailable board does not fail the full source run.
-- Careers adapter fetches boards concurrently to keep runtime reasonable with 100+ configured sources.
+- Job board reliability and rate limiting are handled by JobSpy. If a board blocks or rate limits a scrape, reduce `JOBSPY_SITES`, lower `--max-results`, or retry later.
 
 ## JSON Contract
 
@@ -122,7 +116,7 @@ The frontend Scope dropdown calls `/api/locations`, so location options are gene
 2. Recommended one-command run:
 - `python backend\scripts\run_backend.py --location "San Francisco Bay Area" --role any --level entry --days 30`
 3. Optional step-by-step ingest:
-- `python backend\scripts\ingest.py --source careers --location "San Francisco Bay Area" --role any --level entry --days 30`
+- `python backend\scripts\ingest.py --source jobspy --location "San Francisco Bay Area" --role any --level entry --days 30`
 4. Optional step-by-step extraction:
 - `python backend\scripts\extract_skills.py --location "San Francisco Bay Area" --role any --level entry --days 30 --sample-out backend\logs\skills_sample.json`
 5. Optional step-by-step insights:
@@ -136,5 +130,3 @@ The frontend Scope dropdown calls `/api/locations`, so location options are gene
 
 - Run all backend tests:
 - `python -m unittest discover -s backend\tests`
-- Live provider integration test (optional):
-- `python -m unittest backend.tests.test_integration_theirstack_live`

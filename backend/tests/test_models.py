@@ -18,7 +18,7 @@ class TestModels(unittest.TestCase):
     def test_jobposting_to_json_serializes_fields(self) -> None:
         p = JobPosting(
             id="abc",
-            source="theirstack",
+            source="jobspy",
             url="https://example.com",
             title="Backend Engineer",
             company="Acme",
@@ -33,5 +33,5 @@ class TestModels(unittest.TestCase):
 
         raw = json.loads(p.to_json())
         self.assertEqual(raw["id"], "abc")
-        self.assertEqual(raw["source"], "theirstack")
+        self.assertEqual(raw["source"], "jobspy")
         self.assertEqual(raw["company"], "Acme")

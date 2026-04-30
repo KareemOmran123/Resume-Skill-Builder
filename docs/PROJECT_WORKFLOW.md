@@ -20,7 +20,7 @@ This document explains how the project currently works end to end.
 
 ## End-to-End Data Flow
 
-1. Ingest raw postings from external provider APIs.
+1. Ingest raw postings through JobSpy.
 2. Normalize postings into canonical backend records.
 3. Persist normalized records into `postings`.
 4. Extract hard skills from each posting into `posting_skills`.
@@ -37,7 +37,7 @@ This document explains how the project currently works end to end.
 
 1. Run `backend/scripts/ingest.py`.
 2. Build `IngestionQuery` from CLI arguments.
-3. Fetch raw rows via source adapter (`theirstack` default, `remotive` optional).
+3. Fetch raw rows via the default `jobspy` source adapter.
 4. Normalize records and classify role/level.
 5. Insert unique rows into `postings`.
 
@@ -73,7 +73,7 @@ This document explains how the project currently works end to end.
 2. Recommended one-command backend run:
 - `python backend\scripts\run_backend.py --location "San Francisco Bay Area" --role any --level entry --days 30`
 3. Optional step-by-step ingest:
-- `python backend\scripts\ingest.py --source careers --location "San Francisco Bay Area" --role any --level entry --days 30`
+- `python backend\scripts\ingest.py --source jobspy --location "San Francisco Bay Area" --role any --level entry --days 30`
 4. Optional step-by-step extract:
 - `python backend\scripts\extract_skills.py --location "San Francisco Bay Area" --role any --level entry --days 30 --sample-out backend\logs\skills_sample.json`
 5. Optional step-by-step insights JSON:

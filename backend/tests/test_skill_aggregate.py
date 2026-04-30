@@ -12,8 +12,8 @@ from skillpulse_ingest.storage_sqlite import SQLiteStore
 
 def _posting(url: str, company: str = "Acme") -> JobPosting:
     return JobPosting(
-        id=JobPosting.make_id("theirstack", url),
-        source="theirstack",
+        id=JobPosting.make_id("jobspy", url),
+        source="jobspy",
         url=url,
         title="Backend Engineer",
         company=company,

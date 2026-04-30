@@ -33,6 +33,56 @@ FULLSTACK_KW = [
     "work across the stack", "both sides", "end-to-end", "end to end",
 ]
 
+SOFTWARE_TITLE_INCLUDE = [
+    "software engineer",
+    "software developer",
+    "frontend engineer",
+    "front-end engineer",
+    "front end engineer",
+    "backend engineer",
+    "back-end engineer",
+    "back end engineer",
+    "full stack engineer",
+    "full-stack engineer",
+    "web developer",
+    "web engineer",
+    "application developer",
+    "applications developer",
+    "mobile developer",
+    "ios developer",
+    "android developer",
+    "devops engineer",
+    "site reliability engineer",
+    "sre",
+    "machine learning engineer",
+    "ml engineer",
+    "data engineer",
+    "cloud engineer",
+    "platform engineer",
+    "sde",
+    "swe",
+    "engineer i",
+    "engineer ii",
+]
+
+SOFTWARE_TITLE_EXCLUDE = [
+    "analyst",
+    "warehouse",
+    "logistics",
+    "fleet",
+    "controls engineer",
+    "mechanical engineer",
+    "electrical engineer",
+    "civil engineer",
+    "manufacturing engineer",
+    "quality engineer",
+    "sales engineer",
+    "support specialist",
+    "technician",
+    "recruiter",
+    "coordinator",
+]
+
 def _contains_any(text: str, keywords: list[str]) -> bool:
     t = text.lower()
     return any(_contains_keyword(t, k) for k in keywords)
@@ -59,6 +109,12 @@ def classify_role(title: str, desc: str) -> str:
     if fe > 0:
         return "frontend"
     return "any"
+
+def is_software_job_title(title: str) -> bool:
+    text = title.lower()
+    if _contains_any(text, SOFTWARE_TITLE_EXCLUDE):
+        return False
+    return _contains_any(text, SOFTWARE_TITLE_INCLUDE)
 
 def classify_level(title: str, desc: str) -> str:
     text = f"{title}\n{desc}".lower()

@@ -11,8 +11,8 @@ from skillpulse_ingest.storage_sqlite import SQLiteStore, location_search_terms
 
 def _make_posting(url: str, *, company: str = "Acme", location: str = "Dallas, TX", role: str = "backend", level: str = "entry", retrieved_at: str | None = None, description: str = "Build APIs") -> JobPosting:
     return JobPosting(
-        id=JobPosting.make_id("theirstack", url),
-        source="theirstack",
+        id=JobPosting.make_id("jobspy", url),
+        source="jobspy",
         url=url,
         title="Backend Engineer",
         company=company,
@@ -148,5 +148,19 @@ class TestSQLiteStore(unittest.TestCase):
 
         limited = store.iter_postings(q, limit=1)
         self.assertEqual(len(limited), 1)
+
+        store.close()
+
+    def test_export_postings_returns_json_ready_rows(self) -> None:
+        store = SQLiteStore(":memory:")
+        p = _make_posting("https://example.com/export", location="United States")
+        store.upsert_many([p])
+
+        q = IngestionQuery(location="United States", role_bucket="backend", level_bucket="entry", days=30)
+        rows = store.export_postings(q)
+
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["source"], "jobspy")
+        self.assertEqual(rows[0]["raw"], {"url": "https://example.com/export"})
 
         store.close()

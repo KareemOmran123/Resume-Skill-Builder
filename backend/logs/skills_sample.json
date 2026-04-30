@@ -1,1 +1,581 @@
-[]
+[
+  {
+    "id": "0f7f75a6cdb83e4412068c9908a3c982",
+    "title": "AI-Driven OSINT Analyst",
+    "company": "Openkyber",
+    "extracted_skills": [
+      {
+        "name": "AWS",
+        "count": 1
+      },
+      {
+        "name": "Debugging",
+        "count": 1
+      },
+      {
+        "name": "Python",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "80c481da8baf1d305328d82245ae5ca6",
+    "title": "Front-End Engineer II - AMZ26802.1",
+    "company": "Amazon Web Services",
+    "extracted_skills": [
+      {
+        "name": "JavaScript / TypeScript",
+        "count": 7
+      },
+      {
+        "name": "Java",
+        "count": 2
+      },
+      {
+        "name": "Python",
+        "count": 2
+      },
+      {
+        "name": "AWS",
+        "count": 1
+      },
+      {
+        "name": "Agile",
+        "count": 1
+      },
+      {
+        "name": "Angular",
+        "count": 1
+      },
+      {
+        "name": "Node.js",
+        "count": 1
+      },
+      {
+        "name": "REST APIs",
+        "count": 1
+      },
+      {
+        "name": "React",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "dbe303610e18ad9ee0d939a95d4e8b64",
+    "title": "Junior Software Engineer",
+    "company": "fieldd.co clulo.com",
+    "extracted_skills": [
+      {
+        "name": "Angular",
+        "count": 1
+      },
+      {
+        "name": "Debugging",
+        "count": 1
+      },
+      {
+        "name": "Node.js",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "cdeaa3676b8afbf4a5eec6cf644be187",
+    "title": "Year at Palantir, Internship",
+    "company": "Palantir Technologies",
+    "extracted_skills": [
+      {
+        "name": "JavaScript / TypeScript",
+        "count": 2
+      },
+      {
+        "name": "Agile",
+        "count": 1
+      },
+      {
+        "name": "Java",
+        "count": 1
+      },
+      {
+        "name": "Python",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "bccbea9fe50aaf812dc3d3caf9f2a1b6",
+    "title": "Entry Level Software Engineer/Software Tester",
+    "company": "Amentum",
+    "extracted_skills": [
+      {
+        "name": "Agile",
+        "count": 2
+      },
+      {
+        "name": "Git / Version Control",
+        "count": 2
+      },
+      {
+        "name": "Debugging",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "4b4d6f1c647b29c83086aa637305c161",
+    "title": "Entry Level Software Engineer/Software Tester",
+    "company": "Amentum",
+    "extracted_skills": [
+      {
+        "name": "Agile",
+        "count": 2
+      },
+      {
+        "name": "Debugging",
+        "count": 1
+      },
+      {
+        "name": "Git / Version Control",
+        "count": 1
+      },
+      {
+        "name": "Java",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "579abd92edecf2cc4bf8c70dcd1c8e0a",
+    "title": "Software Developer",
+    "company": "Amentum",
+    "extracted_skills": [
+      {
+        "name": "Agile",
+        "count": 2
+      },
+      {
+        "name": "Git / Version Control",
+        "count": 2
+      },
+      {
+        "name": "Debugging",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "f34f27f15b9d491d75462022733a42c2",
+    "title": "Deep Learning Software Engineer, FlashInfer - New College Grad 2026",
+    "company": "NVIDIA",
+    "extracted_skills": [
+      {
+        "name": "Python",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "51a91de46109fa4ee46ad61410b90e58",
+    "title": "New Grads 2026",
+    "company": "Fortinet",
+    "extracted_skills": []
+  },
+  {
+    "id": "1340a0f6819ab2d7fd61b0af9cb1ed9f",
+    "title": "Jr. Full Stack Software Engineer",
+    "company": "Auria",
+    "extracted_skills": [
+      {
+        "name": "JavaScript / TypeScript",
+        "count": 6
+      },
+      {
+        "name": "Agile",
+        "count": 3
+      },
+      {
+        "name": "REST APIs",
+        "count": 3
+      },
+      {
+        "name": "React",
+        "count": 3
+      },
+      {
+        "name": "SQL / Databases",
+        "count": 3
+      },
+      {
+        "name": "CI/CD",
+        "count": 2
+      },
+      {
+        "name": "Docker / Containers",
+        "count": 2
+      },
+      {
+        "name": "Git / Version Control",
+        "count": 2
+      },
+      {
+        "name": "Java",
+        "count": 2
+      },
+      {
+        "name": "Spring",
+        "count": 2
+      },
+      {
+        "name": "AWS",
+        "count": 1
+      },
+      {
+        "name": "Debugging",
+        "count": 1
+      },
+      {
+        "name": "GraphQL",
+        "count": 1
+      },
+      {
+        "name": "Kubernetes",
+        "count": 1
+      },
+      {
+        "name": "MySQL",
+        "count": 1
+      },
+      {
+        "name": "PostgreSQL",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "33d400fc2847dd32a083c0d088e2faf4",
+    "title": "Specialist, Software Engineering (Embedded)",
+    "company": "L3Harris",
+    "extracted_skills": [
+      {
+        "name": "Agile",
+        "count": 4
+      }
+    ]
+  },
+  {
+    "id": "cb51f01380bfbfe56acabe18654ac6be",
+    "title": "Specialist, Software Engineering",
+    "company": "L3Harris",
+    "extracted_skills": [
+      {
+        "name": "Agile",
+        "count": 4
+      },
+      {
+        "name": "Docker / Containers",
+        "count": 2
+      },
+      {
+        "name": "CI/CD",
+        "count": 1
+      },
+      {
+        "name": "Kubernetes",
+        "count": 1
+      },
+      {
+        "name": "Python",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "7073adc0afc0a2b13f5af37f8ffa6ea2",
+    "title": "Specialist, Systems Engineering - COMINT",
+    "company": "L3Harris",
+    "extracted_skills": [
+      {
+        "name": "JavaScript / TypeScript",
+        "count": 2
+      },
+      {
+        "name": "Docker / Containers",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "19c93ca41e8b6199bb9f0332d10651df",
+    "title": "Software Development Engineer",
+    "company": "CVS Health",
+    "extracted_skills": [
+      {
+        "name": "Docker / Containers",
+        "count": 5
+      },
+      {
+        "name": "AWS",
+        "count": 2
+      },
+      {
+        "name": "CI/CD",
+        "count": 2
+      },
+      {
+        "name": "Kubernetes",
+        "count": 2
+      },
+      {
+        "name": "Terraform",
+        "count": 2
+      },
+      {
+        "name": "Python",
+        "count": 1
+      },
+      {
+        "name": "SQL / Databases",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "5f6a0d4f89b2a49cf0990eedf6e9aba3",
+    "title": "Software Engineer - Columbia, MD",
+    "company": "In-Depth Engineering Corporation",
+    "extracted_skills": [
+      {
+        "name": "Agile",
+        "count": 1
+      },
+      {
+        "name": "Java",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "3eb36707dafe1ec606f789a1a35cda59",
+    "title": "Junior Python Developer",
+    "company": "Openkyber",
+    "extracted_skills": [
+      {
+        "name": "SQL / Databases",
+        "count": 3
+      },
+      {
+        "name": "Python",
+        "count": 2
+      },
+      {
+        "name": "Agile",
+        "count": 1
+      },
+      {
+        "name": "Debugging",
+        "count": 1
+      },
+      {
+        "name": "JavaScript / TypeScript",
+        "count": 1
+      },
+      {
+        "name": "Microservices",
+        "count": 1
+      },
+      {
+        "name": "PostgreSQL",
+        "count": 1
+      },
+      {
+        "name": "React",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "924e4da13fc0e324ba154ae8d606d8dc",
+    "title": "Software Configuration Management Specialist",
+    "company": "L3Harris",
+    "extracted_skills": [
+      {
+        "name": "CI/CD",
+        "count": 3
+      },
+      {
+        "name": "Docker / Containers",
+        "count": 3
+      },
+      {
+        "name": "Agile",
+        "count": 1
+      },
+      {
+        "name": "Debugging",
+        "count": 1
+      },
+      {
+        "name": "Git / Version Control",
+        "count": 1
+      },
+      {
+        "name": "Python",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "d49f6e2d37ca369d69410c9760d8e6c6",
+    "title": "CLOUD SOFTWARE ENGINEER JR. - TS/SCI W/POLY",
+    "company": "Peraton",
+    "extracted_skills": [
+      {
+        "name": "Docker / Containers",
+        "count": 5
+      },
+      {
+        "name": "JavaScript / TypeScript",
+        "count": 5
+      },
+      {
+        "name": "AWS",
+        "count": 3
+      },
+      {
+        "name": "CI/CD",
+        "count": 3
+      },
+      {
+        "name": "Git / Version Control",
+        "count": 3
+      },
+      {
+        "name": "Java",
+        "count": 2
+      },
+      {
+        "name": "Kubernetes",
+        "count": 2
+      },
+      {
+        "name": "REST APIs",
+        "count": 2
+      },
+      {
+        "name": "Agile",
+        "count": 1
+      },
+      {
+        "name": "React",
+        "count": 1
+      },
+      {
+        "name": "SQL / Databases",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "a5a7358e276b801f25a0c28b7fa6db75",
+    "title": "SOFTWARE ENGINEER - MID LEVEL",
+    "company": "Peraton",
+    "extracted_skills": [
+      {
+        "name": "Docker / Containers",
+        "count": 4
+      },
+      {
+        "name": "SQL / Databases",
+        "count": 3
+      },
+      {
+        "name": "AWS",
+        "count": 2
+      },
+      {
+        "name": "Agile",
+        "count": 2
+      },
+      {
+        "name": "JavaScript / TypeScript",
+        "count": 2
+      },
+      {
+        "name": "Angular",
+        "count": 1
+      },
+      {
+        "name": "Git / Version Control",
+        "count": 1
+      },
+      {
+        "name": "Go",
+        "count": 1
+      },
+      {
+        "name": "Java",
+        "count": 1
+      },
+      {
+        "name": "Kubernetes",
+        "count": 1
+      },
+      {
+        "name": "MySQL",
+        "count": 1
+      },
+      {
+        "name": "PostgreSQL",
+        "count": 1
+      },
+      {
+        "name": "Python",
+        "count": 1
+      },
+      {
+        "name": "REST APIs",
+        "count": 1
+      },
+      {
+        "name": "React",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": "60a165535f6f19c95e0159e372774903",
+    "title": "JUNIOR FULL STACK SOFTWARE DEVELOPER / TOP SECRET",
+    "company": "Peraton",
+    "extracted_skills": [
+      {
+        "name": "SQL / Databases",
+        "count": 4
+      },
+      {
+        "name": "PostgreSQL",
+        "count": 3
+      },
+      {
+        "name": "Angular",
+        "count": 2
+      },
+      {
+        "name": "CI/CD",
+        "count": 2
+      },
+      {
+        "name": "Java",
+        "count": 2
+      },
+      {
+        "name": "Agile",
+        "count": 1
+      },
+      {
+        "name": "Git / Version Control",
+        "count": 1
+      }
+    ]
+  }
+]

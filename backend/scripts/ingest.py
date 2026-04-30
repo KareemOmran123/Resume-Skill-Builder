@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import argparse
+import json
 
 from skillpulse_ingest.models import IngestionQuery
 from skillpulse_ingest.pipeline import SOURCES
-from skillpulse_ingest.runtime_paths import DEFAULT_DB_PATH, DEFAULT_LOG_PATH
+from skillpulse_ingest.runtime_paths import DEFAULT_DB_PATH, DEFAULT_LOG_PATH, ensure_parent_dir
+from skillpulse_ingest.storage_sqlite import SQLiteStore
 from skillpulse_ingest.workflow import ingest_postings, setup_logger
 
 
@@ -18,6 +20,7 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--source", choices=sorted(SOURCES.keys()), default=None)
     ap.add_argument("--db", default=str(DEFAULT_DB_PATH))
     ap.add_argument("--log", default=str(DEFAULT_LOG_PATH))
+    ap.add_argument("--out", default=None, help="Optional JSON file path for normalized jobs after ingestion.")
     return ap
 
 
@@ -33,6 +36,16 @@ def main(argv: list[str] | None = None) -> None:
     )
 
     ingest_postings(q, args.db, args.log, source_name=args.source)
+
+    if args.out:
+        store = SQLiteStore(args.db)
+        try:
+            jobs = store.export_postings(q, limit=args.max_results)
+        finally:
+            store.close()
+        out_path = ensure_parent_dir(args.out)
+        out_path.write_text(json.dumps(jobs, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"jobs_written={out_path}")
 
 if __name__ == "__main__":
     main()

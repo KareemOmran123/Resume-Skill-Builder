@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from typing import Iterable
@@ -103,7 +104,7 @@ class SQLiteStore:
                         p.role_bucket,
                         p.level_bucket,
                         p.description_raw,
-                        __import__("json").dumps(p.raw, ensure_ascii=False),
+                        json.dumps(p.raw, ensure_ascii=False),
                     ),
                 )
                 inserted += 1
@@ -151,6 +152,31 @@ class SQLiteStore:
             params = [*params, limit]
         cur = self.conn.cursor()
         return cur.execute(sql, params).fetchall()
+
+    def export_postings(self, q: IngestionQuery, limit: int | None = None) -> list[dict[str, object]]:
+        where_sql, params = self._posting_where_clause(q)
+        sql = (
+            "SELECT id, source, url, title, company, location, date_posted, retrieved_at, "
+            "role_bucket, level_bucket, description_raw, raw_json "
+            "FROM postings "
+            f"WHERE {where_sql} "
+            "ORDER BY retrieved_at DESC"
+        )
+        if limit is not None:
+            sql += " LIMIT ?"
+            params = [*params, limit]
+
+        rows = self.conn.cursor().execute(sql, params).fetchall()
+        out: list[dict[str, object]] = []
+        for row in rows:
+            item = dict(row)
+            raw_json = item.pop("raw_json", "{}")
+            try:
+                item["raw"] = json.loads(str(raw_json))
+            except json.JSONDecodeError:
+                item["raw"] = {}
+            out.append(item)
+        return out
 
     def upsert_posting_skills(
         self,
