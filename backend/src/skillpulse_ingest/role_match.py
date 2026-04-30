@@ -4,9 +4,9 @@ import re
 from typing import Tuple
 
 ENTRY_TOKENS = [
-    "new grad", "graduate", "university grad", "early career",
+    "new grad", "graduate", "university grad", "early career", "campus recruiting",
     "entry level", "entry-level", "junior", "jr", "associate",
-    " l1", " level 1", " engineer i", " engineer 1", " i ", " 1 "
+    "intern", "internship", "l1", "level 1", "engineer i", "engineer 1"
 ]
 
 EXCLUDE_SENIOR = ["senior", " sr", "lead", "staff", "principal", "architect", "manager", "director"]
@@ -35,7 +35,14 @@ FULLSTACK_KW = [
 
 def _contains_any(text: str, keywords: list[str]) -> bool:
     t = text.lower()
-    return any(k in t for k in keywords)
+    return any(_contains_keyword(t, k) for k in keywords)
+
+
+def _contains_keyword(text: str, keyword: str) -> bool:
+    escaped = re.escape(keyword.lower())
+    prefix = r"(?<![a-z0-9])" if keyword[0].isalnum() else ""
+    suffix = r"(?![a-z0-9])" if keyword[-1].isalnum() else ""
+    return re.search(f"{prefix}{escaped}{suffix}", text) is not None
 
 def classify_role(title: str, desc: str) -> str:
     text = f"{title}\n{desc}".lower()
@@ -43,8 +50,8 @@ def classify_role(title: str, desc: str) -> str:
     if _contains_any(text, FULLSTACK_KW):
         return "fullstack"
 
-    be = sum(1 for k in BACKEND_KW if k in text)
-    fe = sum(1 for k in FRONTEND_KW if k in text)
+    be = sum(1 for k in BACKEND_KW if _contains_keyword(text, k))
+    fe = sum(1 for k in FRONTEND_KW if _contains_keyword(text, k))
 
     # simple heuristic
     if be >= fe and be > 0:

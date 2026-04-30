@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 
 from skillpulse_ingest.models import IngestionQuery
 from skillpulse_ingest.pipeline import get_source, run_pipeline
+from skillpulse_ingest.sources.careers import CareersAdapter
 from skillpulse_ingest.sources.remotive import RemotiveAdapter
 
 
@@ -44,6 +45,10 @@ class FakeLogger:
 
 
 class TestPipeline(unittest.TestCase):
+    def test_get_source_default_is_careers(self) -> None:
+        adapter = get_source()
+        self.assertIsInstance(adapter, CareersAdapter)
+
     def test_run_pipeline_filters_senior(self) -> None:
         rows = [
             {
@@ -86,6 +91,38 @@ class TestPipeline(unittest.TestCase):
     def test_get_source_remotive(self) -> None:
         adapter = get_source("remotive")
         self.assertIsInstance(adapter, RemotiveAdapter)
+
+    def test_run_pipeline_normalizes_careers_source(self) -> None:
+        rows = [
+            {
+                "id": "abc",
+                "source_kind": "lever",
+                "title": "Junior Backend Engineer",
+                "company": "Acme",
+                "location": "Dallas, TX",
+                "description": "Build Python APIs and microservices.",
+                "date_posted": datetime.now(timezone.utc).isoformat(),
+                "url": "https://example.com/careers/abc",
+            }
+        ]
+
+        q = IngestionQuery(
+            location="Dallas, TX",
+            role_bucket="backend",
+            level_bucket="entry",
+            days=7,
+            max_results=50,
+        )
+        store = FakeStore()
+        logger = FakeLogger()
+
+        class CareersFakeAdapter(FakeAdapter):
+            name = "careers"
+
+        run_pipeline(q, [CareersFakeAdapter(rows)], store, logger)
+        self.assertEqual(len(store.received), 1)
+        self.assertEqual(store.received[0].source, "careers")
+        self.assertEqual(store.received[0].title, "Junior Backend Engineer")
 
     def test_run_pipeline_handles_fetch_errors(self) -> None:
         q = IngestionQuery(

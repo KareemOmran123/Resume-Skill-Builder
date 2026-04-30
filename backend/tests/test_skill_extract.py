@@ -29,3 +29,11 @@ class TestSkillExtract(unittest.TestCase):
         desc = "Great communication and collaboration required"
         counts = extract_skill_counts(title, desc)
         self.assertEqual(counts, {})
+
+    def test_extracts_common_internship_technical_signals(self) -> None:
+        title = "Software Engineer - Intern"
+        desc = "Designing applications and microservices using Agile Methodologies. Debugging technical issues."
+        counts = extract_skill_counts(title, desc)
+        self.assertIn("Microservices", counts)
+        self.assertIn("Agile", counts)
+        self.assertIn("Debugging", counts)

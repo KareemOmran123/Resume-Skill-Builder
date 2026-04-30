@@ -71,13 +71,13 @@ This document explains how the project currently works end to end.
 1. Install backend package:
 - `python -m pip install -e backend`
 2. Recommended one-command backend run:
-- `python backend\scripts\run_backend.py --location "Dallas, TX" --role backend --level entry --days 30`
+- `python backend\scripts\run_backend.py --location "San Francisco Bay Area" --role any --level entry --days 30`
 3. Optional step-by-step ingest:
-- `python backend\scripts\ingest.py --location "Dallas, TX" --role backend --level entry --days 30`
+- `python backend\scripts\ingest.py --source careers --location "San Francisco Bay Area" --role any --level entry --days 30`
 4. Optional step-by-step extract:
-- `python backend\scripts\extract_skills.py --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
+- `python backend\scripts\extract_skills.py --location "San Francisco Bay Area" --role any --level entry --days 30 --sample-out backend\logs\skills_sample.json`
 5. Optional step-by-step insights JSON:
-- `python backend\scripts\skill_insights.py --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
+- `python backend\scripts\skill_insights.py --location "San Francisco Bay Area" --role any --level entry --days 30 --top 5`
 6. Run tests:
 - `python -m unittest discover -s backend\tests`
 

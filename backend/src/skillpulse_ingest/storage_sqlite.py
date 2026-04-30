@@ -3,6 +3,7 @@ from __future__ import annotations
 import sqlite3
 from datetime import datetime, timedelta, timezone
 from typing import Iterable
+import re
 
 from .models import IngestionQuery, JobPosting
 
@@ -36,6 +37,36 @@ CREATE TABLE IF NOT EXISTS posting_skills (
 CREATE INDEX IF NOT EXISTS idx_posting_skills_skill ON posting_skills(skill);
 CREATE INDEX IF NOT EXISTS idx_posting_skills_posting ON posting_skills(posting_id);
 """
+
+
+def location_search_terms(location: str) -> list[str]:
+    normalized = location.strip().lower()
+    if normalized in {"united states", "us", "usa", "u.s.", "u.s.a.", "us-wide", "nationwide"}:
+        return []
+    aliases = {
+        "dallas, tx": ["dallas", "dfw", "dallas-fort worth"],
+        "dallas-fort worth": ["dallas", "dfw", "dallas-fort worth"],
+        "san francisco bay area": [
+            "san francisco",
+            "bay area",
+            "san jose",
+            "oakland",
+            "mountain view",
+            "sunnyvale",
+            "san mateo",
+            "fremont",
+            "palo alto",
+            "redwood city",
+            "menlo park",
+            "mtvhq",
+            "sfo",
+        ],
+        "new york, ny": ["new york", "new york city", "nyc"],
+        "new york city": ["new york", "new york city", "nyc"],
+        "seattle, wa": ["seattle"],
+        "austin, tx": ["austin"],
+    }.get(normalized)
+    return aliases or ([normalized] if normalized else [])
 
 
 class SQLiteStore:
@@ -95,9 +126,11 @@ class SQLiteStore:
             params.append(q.level_bucket)
 
         if q.location:
-            clauses.append("location IS NOT NULL")
-            clauses.append("LOWER(location) LIKE ?")
-            params.append(f"%{q.location.lower()}%")
+            terms = location_search_terms(q.location)
+            if terms:
+                clauses.append("location IS NOT NULL")
+                clauses.append("(" + " OR ".join("LOWER(location) LIKE ?" for _ in terms) + ")")
+                params.extend(f"%{term}%" for term in terms)
 
         cutoff = datetime.now(timezone.utc) - timedelta(days=q.days)
         clauses.append("retrieved_at >= ?")
@@ -119,7 +152,13 @@ class SQLiteStore:
         cur = self.conn.cursor()
         return cur.execute(sql, params).fetchall()
 
-    def upsert_posting_skills(self, posting_id: str, skill_counts: dict[str, int]) -> tuple[int, int]:
+    def upsert_posting_skills(
+        self,
+        posting_id: str,
+        skill_counts: dict[str, int],
+        *,
+        commit: bool = True,
+    ) -> tuple[int, int]:
         inserted = 0
         updated_or_skipped = 0
         cur = self.conn.cursor()
@@ -148,8 +187,12 @@ class SQLiteStore:
             else:
                 inserted += 1
 
-        self.conn.commit()
+        if commit:
+            self.conn.commit()
         return inserted, updated_or_skipped
+
+    def commit(self) -> None:
+        self.conn.commit()
 
     def get_postings_count(self, q: IngestionQuery) -> int:
         where_sql, params = self._posting_where_clause(q)
@@ -168,6 +211,40 @@ class SQLiteStore:
             params,
         ).fetchone()
         return int(row["n"]) if row else 0
+
+    @staticmethod
+    def _split_location_options(location: str | None) -> list[str]:
+        if not location:
+            return []
+        normalized = " ".join(location.split())
+        parts = re.split(r"\s*(?:;|\||/|\bor\b)\s*", normalized, flags=re.IGNORECASE)
+        return [part.strip(" ,-") for part in parts if part.strip(" ,-")]
+
+    def list_available_locations(self, *, days: int = 30, limit: int = 100) -> list[str]:
+        cutoff = datetime.now(timezone.utc) - timedelta(days=days)
+        cur = self.conn.cursor()
+        rows = cur.execute(
+            """
+            SELECT location, COUNT(*) AS n
+            FROM postings
+            WHERE location IS NOT NULL
+              AND TRIM(location) != ''
+              AND retrieved_at >= ?
+            GROUP BY location
+            ORDER BY n DESC, location ASC
+            """,
+            (cutoff.isoformat(),),
+        ).fetchall()
+
+        counts: dict[str, int] = {}
+        for row in rows:
+            for option in self._split_location_options(row["location"]):
+                if option.lower() in {"united states", "us", "usa", "u.s.", "u.s.a."}:
+                    continue
+                counts[option] = counts.get(option, 0) + int(row["n"])
+
+        ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0].lower()))
+        return ["United States", *[location for location, _ in ordered[: max(0, limit - 1)]]]
 
     def close(self) -> None:
         self.conn.close()

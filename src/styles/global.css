@@ -356,10 +356,14 @@ a {
 
 .skillRow {
   display: grid;
-  grid-template-columns: 30px 1fr auto;
-  gap: 14px;
+  grid-template-columns: 30px minmax(0, 1fr) 72px;
+  gap: 16px;
   padding: 20px 24px;
   align-items: start;
+}
+
+.skillMain {
+  min-width: 0;
 }
 
 .skillIdx {
@@ -384,14 +388,15 @@ a {
 .skillPct {
   font-weight: 800;
   color: var(--color-primary);
+  justify-self: end;
 }
 
 .progressTrack {
-  height: 8px;
+  height: 10px;
   border-radius: 999px;
   background: var(--color-track);
   overflow: hidden;
-  width: min(520px, 54vw);
+  width: 100%;
 }
 
 .progressFill {

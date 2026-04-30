@@ -10,8 +10,7 @@ export default function App() {
 
   const [filters, setFilters] = useState({
     role: "Software Engineer",
-    focusArea: "Backend",
-    location: "San Francisco Bay Area",
+    location: "United States",
     level: "Junior / New Grad",
   });
 

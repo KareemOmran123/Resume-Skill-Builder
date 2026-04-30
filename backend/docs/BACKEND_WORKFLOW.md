@@ -12,7 +12,7 @@ This document explains backend modules, runtime flow, and operation commands.
 - Source selection, normalization, role/level filtering, and persistence.
 
 - `backend/src/skillpulse_ingest/storage_sqlite.py`
-- SQLite schema and store helpers for `postings` and `posting_skills`.
+- SQLite schema and store helpers for `postings`, `posting_skills`, aggregate counts, and available posting locations.
 
 - `backend/src/skillpulse_ingest/skills_catalog.py`
 - Canonical skill groups and regex aliases.
@@ -25,6 +25,9 @@ This document explains backend modules, runtime flow, and operation commands.
 
 - `backend/src/skillpulse_ingest/sources/`
 - Adapter implementations for data providers.
+
+- `backend/src/skillpulse_ingest/api.py`
+- FastAPI routes for health checks, dynamic locations, and frontend skill insights.
 
 ## Database Model
 
@@ -49,12 +52,16 @@ This document explains backend modules, runtime flow, and operation commands.
 4. Normalize + classify + filter.
 5. Upsert into `postings`.
 
+Default source: `careers`.
+
+The `careers` adapter reads `backend/data/career_sources.json`, which can include Greenhouse, Lever, Ashby, and conservative generic HTML sources. It fetches enabled company boards concurrently with a bounded worker pool. The default worker count is `8`, and can be overridden with `CAREER_FETCH_WORKERS`.
+
 ### 2) Skill Extraction Pipeline (Sprint 2)
 
 1. `backend/scripts/extract_skills.py` loads filtered postings.
 2. Clean posting text (`clean_text`).
 3. Extract canonical hard-skill counts (`extract_skill_counts`).
-4. Upsert into `posting_skills`.
+4. Upsert into `posting_skills` with a single batched commit for the extraction run.
 5. Optionally save sample output for manual QA.
 
 ### 3) Insights Aggregation Pipeline (Sprint 3)
@@ -71,42 +78,59 @@ This document explains backend modules, runtime flow, and operation commands.
 2. Shared defaults keep all backend artifacts under `backend/data` and `backend/logs`.
 3. Final insights JSON is printed to stdout, and extraction samples are written to `backend/logs/skills_sample.json` by default.
 
+### 5) API Runtime
+
+1. `GET /api/health` returns service status.
+2. `GET /api/locations` returns `United States` plus distinct locations found in recent stored postings.
+3. `GET /api/skills` returns the frontend-ready skill insights payload for the selected filters.
+
+The frontend Scope dropdown calls `/api/locations`, so location options are generated from ingested posting data rather than a hardcoded list.
+
 ## Filtering Rules
 
 - Shared filter object: `IngestionQuery`.
 - Role and level filters applied when not `any`.
 - Excludes `senior_excluded` records.
 - Time window uses `retrieved_at >= now - days`.
-- Location filter uses case-insensitive `LIKE` match.
+- `United States` does not narrow by city/location.
+- Specific locations use expanded aliases and case-insensitive `LIKE` matching.
+- Available dropdown locations are split from raw posting locations and ordered by posting frequency.
 
 ## Reliability Behavior
 
-- Source adapters retry on transient failures:
+- TheirStack adapter retries on transient failures:
 - connection errors
 - timeouts
 - HTTP `429/500/502/503/504`
 - Backoff: exponential, base `1.0s`, max retries `3`.
+- Careers adapter isolates per-company failures so one unavailable board does not fail the full source run.
+- Careers adapter fetches boards concurrently to keep runtime reasonable with 100+ configured sources.
 
 ## JSON Contract
 
 - Contract doc: `backend/docs/JSON_CONTRACT.md`
 - Schema: `backend/docs/schemas/skill_insights_response.schema.json`
 - Example: `backend/docs/examples/skill_insights_response.example.json`
+- API payloads:
+- `GET /api/locations`
+- `GET /api/skills`
 
 ## Operations
 
 1. Install backend package:
 - `python -m pip install -e backend`
 2. Recommended one-command run:
-- `python backend\scripts\run_backend.py --location "Dallas, TX" --role backend --level entry --days 30`
+- `python backend\scripts\run_backend.py --location "San Francisco Bay Area" --role any --level entry --days 30`
 3. Optional step-by-step ingest:
-- `python backend\scripts\ingest.py --location "Dallas, TX" --role backend --level entry --days 30`
+- `python backend\scripts\ingest.py --source careers --location "San Francisco Bay Area" --role any --level entry --days 30`
 4. Optional step-by-step extraction:
-- `python backend\scripts\extract_skills.py --location "Dallas, TX" --role backend --level entry --days 30 --sample-out backend\logs\skills_sample.json`
+- `python backend\scripts\extract_skills.py --location "San Francisco Bay Area" --role any --level entry --days 30 --sample-out backend\logs\skills_sample.json`
 5. Optional step-by-step insights:
-- `python backend\scripts\skill_insights.py --location "Dallas, TX" --role backend --level entry --days 30 --top 5`
+- `python backend\scripts\skill_insights.py --location "San Francisco Bay Area" --role any --level entry --days 30 --top 5`
 6. Inspect raw DB:
 - `python backend\scripts\inspect_db.py --limit 10`
+7. Start API for frontend:
+- `python -m uvicorn skillpulse_ingest.api:app --host 127.0.0.1 --port 8000`
 
 ## Tests
 

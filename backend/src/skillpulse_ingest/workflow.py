@@ -81,7 +81,7 @@ def extract_posting_skills(
         for row in rows:
             postings_processed += 1
             skill_counts = extract_skill_counts(row["title"], row["description_raw"])
-            inserted, updated = store.upsert_posting_skills(row["id"], skill_counts)
+            inserted, updated = store.upsert_posting_skills(row["id"], skill_counts, commit=False)
             skills_inserted += inserted
             skills_updated += updated
 
@@ -100,6 +100,7 @@ def extract_posting_skills(
                         ],
                     }
                 )
+        store.commit()
     finally:
         store.close()
 
