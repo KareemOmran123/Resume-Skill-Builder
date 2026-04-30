@@ -10,3 +10,4 @@ backend/data/career_sources.json
 gha-creds-*.json
 backend/data/tmp*/
 backend/logs/tmp*/
+backend/logs/*.log
