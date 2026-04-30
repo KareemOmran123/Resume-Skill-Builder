@@ -18,7 +18,7 @@ export default function Landing({ ctx }) {
           </p>
 
           <button className="primaryBtn" onClick={() => ctx.go("/select")}>
-            Select a Role <span aria-hidden="true">&rarr;</span>
+            Select a Scope <span aria-hidden="true">&rarr;</span>
           </button>
 
           <div className="footerNote">

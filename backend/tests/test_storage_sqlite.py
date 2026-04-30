@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from skillpulse_ingest.models import IngestionQuery, JobPosting
-from skillpulse_ingest.storage_sqlite import SQLiteStore
+from skillpulse_ingest.storage_sqlite import SQLiteStore, location_search_terms
 
 
 def _make_posting(url: str, *, company: str = "Acme", location: str = "Dallas, TX", role: str = "backend", level: str = "entry", retrieved_at: str | None = None, description: str = "Build APIs") -> JobPosting:
@@ -27,6 +27,14 @@ def _make_posting(url: str, *, company: str = "Acme", location: str = "Dallas, T
 
 
 class TestSQLiteStore(unittest.TestCase):
+    def test_location_search_terms_expand_common_regions(self) -> None:
+        self.assertIn("san francisco", location_search_terms("San Francisco Bay Area"))
+        self.assertIn("mountain view", location_search_terms("San Francisco Bay Area"))
+        self.assertIn("san mateo", location_search_terms("San Francisco Bay Area"))
+        self.assertIn("fremont", location_search_terms("San Francisco Bay Area"))
+        self.assertIn("dallas", location_search_terms("Dallas-Fort Worth"))
+        self.assertEqual(location_search_terms("United States"), [])
+
     def test_upsert_inserts_and_skips(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             db_path = Path(tmpdir) / "skillpulse.db"
@@ -63,6 +71,59 @@ class TestSQLiteStore(unittest.TestCase):
             (p.id,),
         ).fetchall()
         self.assertEqual([(r["skill"], r["count"]) for r in rows], [("Python", 3), ("React", 1)])
+
+        store.close()
+
+    def test_location_alias_filters_match_bay_area_jobs(self) -> None:
+        store = SQLiteStore(":memory:")
+        p1 = _make_posting(
+            "https://example.com/bay",
+            location="Mountain View, California; San Francisco, California",
+        )
+        p2 = _make_posting("https://example.com/seattle", location="Seattle, Washington")
+        store.upsert_many([p1, p2])
+
+        q = IngestionQuery(location="San Francisco Bay Area", role_bucket="backend", level_bucket="entry", days=30)
+
+        rows = store.iter_postings(q)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["location"], "Mountain View, California; San Francisco, California")
+        self.assertEqual(store.get_postings_count(q), 1)
+
+        store.close()
+
+    def test_united_states_location_does_not_filter_by_location(self) -> None:
+        store = SQLiteStore(":memory:")
+        p1 = _make_posting("https://example.com/sf", location="San Francisco, CA")
+        p2 = _make_posting("https://example.com/nyc", location="New York, NY")
+        store.upsert_many([p1, p2])
+
+        q = IngestionQuery(location="United States", role_bucket="backend", level_bucket="entry", days=30)
+
+        self.assertEqual(store.get_postings_count(q), 2)
+        self.assertEqual(len(store.iter_postings(q)), 2)
+
+        store.close()
+
+    def test_list_available_locations_comes_from_postings(self) -> None:
+        store = SQLiteStore(":memory:")
+        store.upsert_many(
+            [
+                _make_posting("https://example.com/sf", location="San Francisco, CA; Seattle, WA"),
+                _make_posting("https://example.com/dallas", location="Dallas, TX"),
+                _make_posting("https://example.com/boston", location="Boston, MA"),
+                _make_posting("https://example.com/us", location="United States"),
+            ]
+        )
+
+        locations = store.list_available_locations(days=30)
+
+        self.assertEqual(locations[0], "United States")
+        self.assertEqual(locations.count("United States"), 1)
+        self.assertIn("San Francisco, CA", locations)
+        self.assertIn("Seattle, WA", locations)
+        self.assertIn("Dallas, TX", locations)
+        self.assertIn("Boston, MA", locations)
 
         store.close()
 

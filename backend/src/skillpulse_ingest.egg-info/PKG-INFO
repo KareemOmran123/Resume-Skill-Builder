@@ -5,3 +5,5 @@ Summary: SkillPulse job ingestion backend
 Requires-Python: >=3.10
 Requires-Dist: requests>=2.31.0
 Requires-Dist: python-dateutil>=2.9.0
+Requires-Dist: fastapi
+Requires-Dist: uvicorn

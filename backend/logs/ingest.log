@@ -1,0 +1,79 @@
+2026-04-28 14:28:20,026 INFO Fetching from source=theirstack
+2026-04-28 14:28:21,090 ERROR Fetch failed for source=theirstack: 422 Client Error: Unprocessable Entity for url: https://api.theirstack.com/v1/jobs/search
+2026-04-28 14:28:21,091 INFO Pipeline complete inserted=0 skipped=0
+2026-04-28 14:40:25,659 INFO Fetching from source=theirstack
+2026-04-28 14:40:27,324 ERROR Fetch failed for source=theirstack: 422 Client Error: Unprocessable Entity for url: https://api.theirstack.com/v1/jobs/search
+2026-04-28 14:40:27,324 INFO Pipeline complete inserted=0 skipped=0
+2026-04-28 14:42:55,351 INFO Fetching from source=theirstack
+2026-04-28 14:42:56,429 ERROR Fetch failed for source=theirstack: 422 Client Error: Unprocessable Entity for url: https://api.theirstack.com/v1/jobs/search
+2026-04-28 14:42:56,430 INFO Pipeline complete inserted=0 skipped=0
+2026-04-28 14:49:25,789 INFO Fetching from source=theirstack
+2026-04-28 14:49:26,880 ERROR Fetch failed for source=theirstack: 422 Client Error: Unprocessable Entity for url: https://api.theirstack.com/v1/jobs/search
+2026-04-28 14:49:26,882 INFO Pipeline complete inserted=0 skipped=0
+2026-04-28 14:51:02,259 INFO Fetching from source=theirstack
+2026-04-28 14:51:09,347 INFO Fetched 4 raw jobs from source=theirstack
+2026-04-28 14:51:09,351 INFO Upserted source=theirstack inserted=1 skipped=1 (after filtering 2)
+2026-04-28 14:51:09,351 INFO Pipeline complete inserted=1 skipped=1
+2026-04-28 14:55:52,200 INFO Fetching from source=theirstack
+2026-04-28 14:55:53,673 ERROR Fetch failed for source=theirstack: 403 Client Error: Forbidden for url: https://api.theirstack.com/v1/jobs/search
+2026-04-28 14:55:53,674 INFO Pipeline complete inserted=0 skipped=0
+2026-04-28 14:56:21,256 INFO Fetching from source=theirstack
+2026-04-28 14:56:24,947 INFO Fetched 4 raw jobs from source=theirstack
+2026-04-28 14:56:24,950 INFO Upserted source=theirstack inserted=0 skipped=2 (after filtering 2)
+2026-04-28 14:56:24,950 INFO Pipeline complete inserted=0 skipped=2
+2026-04-28 15:23:34,261 INFO Fetching from source=careers
+2026-04-28 15:23:39,179 INFO Fetched 25 raw jobs from source=careers
+2026-04-28 15:23:39,202 INFO Upserted source=careers inserted=1 skipped=0 (after filtering 1)
+2026-04-28 15:23:39,202 INFO Pipeline complete inserted=1 skipped=0
+2026-04-28 15:28:17,836 INFO Fetching from source=careers
+2026-04-28 15:28:19,673 INFO Fetched 25 raw jobs from source=careers
+2026-04-28 15:28:19,824 INFO Upserted source=careers inserted=0 skipped=0 (after filtering 0)
+2026-04-28 15:28:19,824 INFO Pipeline complete inserted=0 skipped=0
+2026-04-28 15:30:22,097 INFO Fetching from source=careers
+2026-04-28 15:30:24,774 INFO Fetched 0 raw jobs from source=careers
+2026-04-28 15:30:24,774 INFO Upserted source=careers inserted=0 skipped=0 (after filtering 0)
+2026-04-28 15:30:24,774 INFO Pipeline complete inserted=0 skipped=0
+2026-04-28 15:34:46,964 INFO Fetching from source=careers
+2026-04-28 15:34:49,281 INFO Fetched 1 raw jobs from source=careers
+2026-04-28 15:34:49,293 INFO Upserted source=careers inserted=1 skipped=0 (after filtering 1)
+2026-04-28 15:34:49,294 INFO Pipeline complete inserted=1 skipped=0
+2026-04-28 15:38:16,478 INFO Fetching from source=careers
+2026-04-28 15:38:18,736 INFO Fetched 1 raw jobs from source=careers
+2026-04-28 15:38:18,751 INFO Upserted source=careers inserted=1 skipped=0 (after filtering 1)
+2026-04-28 15:38:18,751 INFO Pipeline complete inserted=1 skipped=0
+2026-04-28 15:43:38,465 INFO Fetching from source=careers
+2026-04-28 15:43:40,564 INFO Fetched 1 raw jobs from source=careers
+2026-04-28 15:43:40,577 INFO Upserted source=careers inserted=1 skipped=0 (after filtering 1)
+2026-04-28 15:43:40,577 INFO Pipeline complete inserted=1 skipped=0
+2026-04-28 15:43:44,357 INFO Fetching from source=careers
+2026-04-28 15:43:46,440 INFO Fetched 1 raw jobs from source=careers
+2026-04-28 15:43:46,451 INFO Upserted source=careers inserted=0 skipped=1 (after filtering 1)
+2026-04-28 15:43:46,451 INFO Pipeline complete inserted=0 skipped=1
+2026-04-28 16:33:00,074 INFO Fetching from source=careers
+2026-04-28 16:33:08,470 INFO Fetched 5 raw jobs from source=careers
+2026-04-28 16:33:08,503 INFO Upserted source=careers inserted=5 skipped=0 (after filtering 5)
+2026-04-28 16:33:08,503 INFO Pipeline complete inserted=5 skipped=0
+2026-04-28 16:55:51,855 INFO Fetching from source=careers
+2026-04-28 16:55:59,920 INFO Fetched 7 raw jobs from source=careers
+2026-04-28 16:55:59,954 INFO Upserted source=careers inserted=7 skipped=0 (after filtering 7)
+2026-04-28 16:55:59,954 INFO Pipeline complete inserted=7 skipped=0
+2026-04-28 16:59:12,182 INFO Fetching from source=careers
+2026-04-28 16:59:53,918 INFO Fetched 24 raw jobs from source=careers
+2026-04-28 16:59:54,077 INFO Upserted source=careers inserted=24 skipped=0 (after filtering 24)
+2026-04-28 16:59:54,077 INFO Pipeline complete inserted=24 skipped=0
+2026-04-29 15:49:38,337 INFO Fetching from source=careers
+2026-04-29 15:50:24,289 INFO Fetched 6 raw jobs from source=careers
+2026-04-29 15:50:24,339 INFO Upserted source=careers inserted=6 skipped=0 (after filtering 6)
+2026-04-29 15:50:24,339 INFO Pipeline complete inserted=6 skipped=0
+2026-04-29 15:52:09,314 INFO Fetching from source=careers
+2026-04-29 15:52:51,885 INFO Fetched 26 raw jobs from source=careers
+2026-04-29 15:52:52,067 INFO Upserted source=careers inserted=26 skipped=0 (after filtering 26)
+2026-04-29 15:52:52,067 INFO Pipeline complete inserted=26 skipped=0
+2026-04-30 13:06:45,309 INFO Fetching from source=careers
+2026-04-30 13:06:55,061 INFO Fetched 21 raw jobs from source=careers
+2026-04-30 13:06:55,186 INFO Upserted source=careers inserted=21 skipped=0 (after filtering 21)
+2026-04-30 13:06:55,188 INFO Pipeline complete inserted=21 skipped=0
+2026-04-30 13:16:52,424 INFO Fetching from source=careers
+2026-04-30 13:17:06,121 INFO Fetched 27 raw jobs from source=careers
+2026-04-30 13:17:06,298 INFO Upserted source=careers inserted=27 skipped=0 (after filtering 27)
+2026-04-30 13:17:06,299 INFO Pipeline complete inserted=27 skipped=0

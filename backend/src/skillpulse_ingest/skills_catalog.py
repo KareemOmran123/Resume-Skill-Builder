@@ -34,6 +34,19 @@ SKILL_PATTERNS: OrderedDict[str, tuple[str, ...]] = OrderedDict(
             r"\bweb\s+services?\b",
             r"\bhttp\s+api(?:s)?\b",
         ),
+        "Microservices": (
+            r"\bmicroservice(?:s)?\b",
+        ),
+        "Agile": (
+            r"\bagile\b",
+            r"\bscrum\b",
+            r"\bkanban\b",
+        ),
+        "Debugging": (
+            r"\bdebugging\b",
+            r"\bdebug\b",
+            r"\btroubleshoot(?:ing)?\b",
+        ),
         "Git / Version Control": (
             r"\bgit\b",
             r"\bgithub\b",

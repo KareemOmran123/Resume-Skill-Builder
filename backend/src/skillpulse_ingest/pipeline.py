@@ -6,13 +6,15 @@ from typing import Optional, Type, Iterable
 
 from .models import IngestionQuery, JobPosting
 from .role_match import classify_level, classify_role, matches_query
+from .sources.careers import CareersAdapter
 from .sources.remotive import RemotiveAdapter
 from .sources.theirstack import TheirstackAdapter
 from .sources.base import SourceAdapter
 
-DEFAULT_SOURCE = "theirstack"
+DEFAULT_SOURCE = "careers"
 
 SOURCES: dict[str, Type[SourceAdapter]] = {
+    "careers": CareersAdapter,
     "theirstack": TheirstackAdapter,
     "remotive": RemotiveAdapter,
 }
@@ -39,6 +41,15 @@ def _coerce_text(value: object) -> str:
             return name
         return json.dumps(value, ensure_ascii=False)
     return str(value)
+
+
+def _first_text(raw: dict, *keys: str) -> str:
+    for key in keys:
+        value = raw.get(key)
+        text = _coerce_text(value)
+        if text:
+            return text
+    return ""
 
 
 def _normalize_remotive(raw: dict) -> JobPosting:
@@ -69,22 +80,21 @@ def _normalize_remotive(raw: dict) -> JobPosting:
 
 
 def _normalize_theirstack(raw: dict) -> JobPosting:
-    url = _coerce_text(raw.get("final_url")) or _coerce_text(raw.get("url")) or _coerce_text(raw.get("source_url"))
-    title = _coerce_text(raw.get("job_title"))
-    company = _coerce_text(raw.get("company"))
+    url = _first_text(raw, "url", "final_url", "source_url")
+    title = _first_text(raw, "job_title", "title")
+    company = _first_text(raw, "company", "company_name")
     location = (
-        _coerce_text(raw.get("location"))
-        or _coerce_text(raw.get("short_location"))
-        or _coerce_text(raw.get("long_location"))
+        _first_text(raw, "location", "short_location", "long_location")
         or None
     )
-    date_posted = _coerce_text(raw.get("date_posted")) or None
-    description = _coerce_text(raw.get("description"))
+    date_posted = _first_text(raw, "date_posted", "discovered_at") or None
+    description = _first_text(raw, "description", "job_description")
 
     role_bucket = classify_role(title, description)
     level_bucket = classify_level(title, description)
 
-    fallback_url = f"theirstack://{raw.get('id', '')}"
+    source_id = _first_text(raw, "id", "job_id", "url")
+    fallback_url = f"theirstack://{source_id}"
 
     return JobPosting(
         id=JobPosting.make_id("theirstack", url or fallback_url),
@@ -102,7 +112,43 @@ def _normalize_theirstack(raw: dict) -> JobPosting:
     )
 
 
+def _normalize_careers(raw: dict) -> JobPosting:
+    url = _first_text(raw, "url")
+    source_kind = _first_text(raw, "source_kind") or "careers"
+    title = _first_text(raw, "title")
+    company = _first_text(raw, "company", "source_company")
+    location = _first_text(raw, "location") or None
+    date_posted = _first_text(raw, "date_posted") or None
+    description = _strip_source_description(_first_text(raw, "description"))
+
+    role_bucket = classify_role(title, description)
+    level_bucket = classify_level(title, description)
+
+    fallback_url = f"careers://{source_kind}/{_first_text(raw, 'id') or title}"
+
+    return JobPosting(
+        id=JobPosting.make_id("careers", url or fallback_url),
+        source="careers",
+        url=url or fallback_url,
+        title=title,
+        company=company,
+        location=location,
+        date_posted=date_posted,
+        retrieved_at=datetime.now(timezone.utc).isoformat(),
+        role_bucket=role_bucket,
+        level_bucket=level_bucket,
+        description_raw=description,
+        raw=raw,
+    )
+
+
+def _strip_source_description(value: str) -> str:
+    return " ".join(value.replace("\r", "\n").split())
+
+
 def _normalize(source: SourceAdapter, raw: dict) -> JobPosting:
+    if source.name == "careers":
+        return _normalize_careers(raw)
     if source.name == "remotive":
         return _normalize_remotive(raw)
     if source.name == "theirstack":

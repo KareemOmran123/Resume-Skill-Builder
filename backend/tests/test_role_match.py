@@ -9,6 +9,11 @@ class TestRoleMatch(unittest.TestCase):
         desc = "Work on APIs and services in Java."
         self.assertEqual(classify_role(title, desc), "backend")
 
+    def test_classify_role_does_not_match_api_inside_words(self) -> None:
+        title = "Candidate Experience Coordinator"
+        desc = "Partner with talent acquisition teams and schedule interviews."
+        self.assertEqual(classify_role(title, desc), "any")
+
     def test_classify_role_fullstack(self) -> None:
         title = "Full Stack Engineer"
         desc = "End-to-end ownership across frontend and backend."
@@ -18,6 +23,16 @@ class TestRoleMatch(unittest.TestCase):
         title = "Junior Software Engineer"
         desc = "0-2 years experience"
         self.assertEqual(classify_level(title, desc), "entry")
+
+    def test_classify_level_intern_tokens(self) -> None:
+        title = "Software Engineer, Intern"
+        desc = "Campus recruiting role"
+        self.assertEqual(classify_level(title, desc), "entry")
+
+    def test_classify_level_does_not_match_single_letters(self) -> None:
+        title = "Candidate Experience Coordinator"
+        desc = "Coordinate interviews and offer letters."
+        self.assertEqual(classify_level(title, desc), "any")
 
     def test_classify_level_excludes_senior(self) -> None:
         title = "Senior Software Engineer"
