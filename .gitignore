@@ -1,6 +1,12 @@
 node_modules
 dist
 .env
+.ci_tmp/
+.tmp_test/
 __pycache__/
 *.pyc
 backend/data/career_sources.json
+.gemini/
+gha-creds-*.json
+backend/data/tmp*/
+backend/logs/tmp*/

@@ -1,0 +1,47 @@
+name: Reusable Staging Deployment
+
+on:
+  workflow_call:
+    inputs:
+      environment-name:
+        description: GitHub Environment to target.
+        default: staging
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment-name }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ inputs.environment-name }}
+      url: ${{ vars.STAGING_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Validate OIDC deployment configuration
+        env:
+          CLOUD_PROVIDER: ${{ vars.CLOUD_PROVIDER }}
+          CLOUD_REGION: ${{ vars.CLOUD_REGION }}
+          CLOUD_ROLE_TO_ASSUME: ${{ vars.CLOUD_ROLE_TO_ASSUME }}
+        run: |
+          echo "Staging deployment scaffold is ready."
+          echo "Configure cloud OIDC federation before replacing this placeholder."
+          echo "Provider: ${CLOUD_PROVIDER:-not-set}"
+          echo "Region: ${CLOUD_REGION:-not-set}"
+          echo "Role or workload identity: ${CLOUD_ROLE_TO_ASSUME:-not-set}"
+
+      - name: Deploy application placeholder
+        run: |
+          echo "Replace this step with cloud-specific deployment commands."
+          echo "Use GitHub OIDC instead of long-lived cloud credentials."
